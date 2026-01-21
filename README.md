@@ -1,1 +1,650 @@
-# corporatesite
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowRight, BarChart3, GraduationCap, Globe, Users, Briefcase, MessageSquare, ArrowUpRight, ChevronDown } from 'lucide-react';
+
+// --- Custom Hooks ---
+
+// Scroll Reveal Animation Hook
+const useReveal = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      if (ref.current) observer.unobserve(ref.current);
+    };
+  }, []);
+
+  return [ref, isVisible];
+};
+
+// Count Up Animation Hook for Numbers
+const useCountUp = (end, duration = 2000, start = 0) => {
+  const [count, setCount] = useState(start);
+  const [ref, isVisible] = useReveal();
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    let startTime = null;
+    // Remove non-numeric characters for calculation if end is string like "1,500"
+    const endNum = parseInt(String(end).replace(/,/g, ''), 10);
+    
+    const animate = (currentTime) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      
+      // Easing function (easeOutExpo)
+      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      
+      setCount(Math.floor(easeProgress * (endNum - start) + start));
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setCount(endNum);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [isVisible, end, duration, start]);
+
+  return [ref, count.toLocaleString()];
+};
+
+// --- Components ---
+
+// Reveal Component
+const Reveal = ({ children, className = "", delay = 0 }) => {
+  const [ref, isVisible] = useReveal();
+  
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] transform ${className} ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// 3D Network Globe Component (Hero Section Background)
+const NetworkGlobeBackground = () => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+    
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
+
+    // Configuration
+    // PCでは大きく、スマホでは少し小さく調整
+    const globeRadius = window.innerWidth < 768 ? 160 : 280;
+    const dotCount = 500; 
+    const connectionDistance = 45; // 線をつなぐ距離
+    
+    const dots = [];
+    const edges = [];
+    
+    // Rotation state
+    let rotation = 0;
+    let rotationX = 0;
+    const rotationSpeed = 0.001;
+    
+    // Mouse interaction
+    const mouse = { x: w * 0.75, y: h / 2 };
+    const targetRotation = { x: 0, y: 0 };
+
+    const handleResize = () => {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    // 1. Initialize Dots (Fibonacci Sphere)
+    for (let i = 0; i < dotCount; i++) {
+      const phi = Math.acos(-1 + (2 * i) / dotCount);
+      const theta = Math.sqrt(dotCount * Math.PI) * phi;
+
+      dots.push({
+        x: globeRadius * Math.cos(theta) * Math.sin(phi),
+        y: globeRadius * Math.sin(theta) * Math.sin(phi),
+        z: globeRadius * Math.cos(phi),
+        baseSize: Math.random() * 1.5 + 0.5,
+      });
+    }
+
+    // 2. Pre-calculate Edges
+    for (let i = 0; i < dotCount; i++) {
+      for (let j = i + 1; j < dotCount; j++) {
+        const d1 = dots[i];
+        const d2 = dots[j];
+        const dist = Math.sqrt((d1.x - d2.x)**2 + (d1.y - d2.y)**2 + (d1.z - d2.z)**2);
+        if (dist < connectionDistance) {
+          edges.push({ p1: i, p2: j });
+        }
+      }
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, w, h);
+      
+      targetRotation.x = (mouse.y - h / 2) * 0.0002;
+      targetRotation.y = (mouse.x - w / 2) * 0.0002;
+
+      rotation += rotationSpeed;
+      rotationX += (targetRotation.x - rotationX) * 0.05;
+
+      // Position: PC=Right side, Mobile=Center
+      const cx = window.innerWidth < 768 ? w / 2 : w * 0.7;
+      const cy = window.innerWidth < 768 ? h * 0.6 : h / 2;
+
+      // Project Dots
+      const projectedDots = dots.map(dot => {
+        // Y rotation (Spin)
+        let x = dot.x * Math.cos(rotation) - dot.z * Math.sin(rotation);
+        let z = dot.x * Math.sin(rotation) + dot.z * Math.cos(rotation);
+        let y = dot.y;
+
+        // X rotation (Tilt)
+        const yNew = y * Math.cos(rotationX) - z * Math.sin(rotationX);
+        const zNew = y * Math.sin(rotationX) + z * Math.cos(rotationX);
+        y = yNew;
+        z = zNew;
+
+        const scale = 450 / (450 + z); 
+        const x2d = cx + x * scale;
+        const y2d = cy + y * scale;
+
+        return { 
+          x: x2d, y: y2d, z: z, scale: scale, 
+          baseSize: dot.baseSize,
+          visible: z > -globeRadius * 0.5 // Hide back slightly
+        };
+      });
+
+      // Draw Edges
+      ctx.lineWidth = 0.5;
+      edges.forEach(edge => {
+        const p1 = projectedDots[edge.p1];
+        const p2 = projectedDots[edge.p2];
+
+        if (p1.visible && p2.visible) {
+            const depth = Math.min(p1.z, p2.z);
+            // Depth-based opacity
+            const alpha = ((depth + globeRadius) / (2 * globeRadius)) * 0.15;
+
+            if (alpha > 0) {
+                ctx.strokeStyle = `rgba(20, 20, 20, ${alpha})`;
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+            }
+        }
+      });
+
+      // Draw Dots
+      projectedDots.forEach(dot => {
+        if (dot.visible) {
+            const alpha = ((dot.z + globeRadius) / (2 * globeRadius)) * 0.6;
+            if (alpha > 0) {
+                ctx.fillStyle = `rgba(26, 26, 26, ${alpha})`;
+                ctx.beginPath();
+                ctx.arc(dot.x, dot.y, dot.baseSize * dot.scale, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+      });
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 z-0 opacity-100 pointer-events-none" />;
+};
+
+// CountUp Number Component
+const AnimatedNumber = ({ value, suffix = "", sub }) => {
+  const [ref, count] = useCountUp(value);
+  
+  return (
+    <div ref={ref} className="flex flex-col group cursor-default hover:bg-black/5 p-4 transition-colors -ml-4 rounded-lg">
+      <div className="text-[10px] font-bold tracking-[0.2em] text-[#555] mb-2 uppercase flex items-center gap-2">
+         {sub}
+      </div>
+      <div className="text-3xl md:text-5xl font-black text-[#111] leading-none mb-2 tracking-tighter flex items-baseline">
+        {count}
+        <span className="text-base md:text-xl font-bold ml-1 text-[#555]">{suffix}</span>
+      </div>
+    </div>
+  );
+};
+
+// Main App Component
+const App = () => {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Sections
+  const Hero = () => (
+    <section className="relative min-h-screen flex flex-col justify-center px-6 md:px-12 pt-20 pb-24 bg-white overflow-hidden">
+      {/* 3D Network Globe Background (Top Only) */}
+      <NetworkGlobeBackground />
+      
+      {/* Dynamic Overlay for depth */}
+      <div className="absolute inset-0 bg-gradient-to-r from-white via-white/40 to-transparent z-0 pointer-events-none"></div>
+
+      <div className="max-w-[95rem] mx-auto w-full relative z-10 pointer-events-none">
+        
+        {/* Massive Typography - Japanese Concept Only */}
+        <div className="mb-20 md:mb-32">
+          <Reveal>
+            <div className="flex items-baseline space-x-4 mb-8 opacity-60">
+               <div className="h-[2px] w-12 bg-black"></div>
+               <span className="text-xs font-bold tracking-[0.4em] uppercase text-black">Concept</span>
+            </div>
+          </Reveal>
+          
+          <Reveal delay={200}>
+            <h1 className="text-[#111] leading-none pointer-events-auto">
+              <span className="block text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 md:mb-8 text-gray-800">
+                社会を豊かにする、
+              </span>
+              <span className="block text-[13vw] md:text-[8rem] lg:text-[9rem] font-black tracking-tighter leading-[0.85] mix-blend-multiply mb-2 md:mb-6">
+                新たな一歩を
+              </span>
+              <div className="flex items-baseline flex-wrap">
+                 <span className="relative inline-block text-[13vw] md:text-[8rem] lg:text-[9rem] font-black tracking-tighter mr-4 md:mr-8 text-black z-10">
+                    “ココ”
+                    <span className="absolute bottom-4 left-0 w-full h-[0.1em] bg-gray-300 -z-10 transform -rotate-1 origin-left"></span>
+                 </span>
+                 <span className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-gray-700">から。</span>
+              </div>
+            </h1>
+          </Reveal>
+        </div>
+
+        {/* Sub Information Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-end pointer-events-auto">
+          <div className="md:col-span-6">
+            <Reveal delay={400}>
+              <p className="text-xl md:text-2xl font-bold text-[#111] leading-relaxed tracking-tight backdrop-blur-sm">
+                自らが成長し続け、人間力ある人財を育み、<br />
+                経済活動を通して、社会と地球に貢献する。
+              </p>
+            </Reveal>
+          </div>
+          <div className="md:col-span-6 flex flex-col justify-end">
+            <Reveal delay={600}>
+               <div className="flex flex-col gap-6 border-l-2 border-black pl-8 ml-2 bg-white/60 backdrop-blur-md py-6 pr-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <div className="text-base text-[#333] leading-relaxed font-medium">
+                    Oneは、商売の本質と金融知識を軸に、個人と企業が「自ら考え、決断し、行動できる力」を育てます。
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-black/60">
+                    <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
+                    Partner for Growth
+                  </div>
+               </div>
+            </Reveal>
+          </div>
+        </div>
+
+        {/* Facts - Animated Numbers */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 mt-24 pt-12 border-t border-black pointer-events-auto">
+          <AnimatedNumber value="1500" suffix="+" sub="講演・セミナー実績" />
+          <AnimatedNumber value="10000" suffix="+" sub="累計相談者数" />
+          <AnimatedNumber value="10" suffix="Years" sub="国内外企業支援" />
+          
+          <Reveal delay={300}>
+             <div className="flex flex-col group cursor-default hover:bg-black/5 p-4 transition-colors -ml-4 rounded-lg">
+              <div className="text-[10px] font-bold tracking-[0.2em] text-[#555] mb-2 uppercase flex items-center gap-2">
+                 年商1億円超人材
+              </div>
+              <div className="text-3xl md:text-5xl font-black text-[#111] leading-none mb-2 tracking-tighter flex items-baseline">
+                Many
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+      
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-8 left-12 z-20 hidden md:flex items-center gap-4">
+        <span className="text-[10px] font-bold tracking-[0.3em] uppercase writing-vertical-lr text-black">Scroll</span>
+        <div className="h-16 w-[1px] bg-black overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-full h-1/2 bg-gray-400 animate-slideDown"></div>
+        </div>
+      </div>
+    </section>
+  );
+
+  const Philosophy = () => (
+    <section className="py-32 md:py-48 px-6 bg-[#111] text-white relative overflow-hidden">
+      <div className="max-w-6xl mx-auto relative z-10">
+        <Reveal>
+          <div className="flex items-center mb-16">
+            <div className="w-12 h-[1px] bg-white/50 mr-6"></div>
+            <div className="text-xs tracking-[0.3em] font-medium uppercase text-white/70">Philosophy</div>
+          </div>
+        </Reveal>
+        
+        <Reveal delay={200}>
+          <h2 className="text-3xl md:text-6xl font-bold mb-24 leading-tight tracking-tight">
+            経済は目的ではなく、<br />
+            <span className="text-gray-400">未来を支えるための手段。</span>
+          </h2>
+        </Reveal>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-32 text-lg md:text-xl font-light leading-loose text-gray-300">
+          <Reveal delay={400}>
+            <p className="mb-12">
+              私たちは、自らが学び、成長し続ける存在でありたいと考えています。
+              そして、人間力と実践力を備えた人財を育み、
+              健全な経済活動を通して、この地球に貢献することを使命としています。
+            </p>
+          </Reveal>
+          <Reveal delay={600}>
+            <p className="mb-12">
+              精神と経済、その両輪が自律してこそ、
+              個人も企業も、持続的に成長することができます。
+              Oneは、一人ひとりの「意志ある一歩」から始まる成長を支え、
+              責任ある経済活動が循環する社会を目指します。
+            </p>
+            <div className="pt-8 border-t border-white/10 mt-8 hover:border-white/30 transition-colors duration-500">
+              <p className="text-sm text-gray-500 leading-relaxed">
+                <span className="text-white font-medium block mb-2 text-base">Concept: “ココ”</span>
+                此処・個々・瞬間。<br />
+                変化は、今ここにいる一人の選択から始まる。
+              </p>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+
+  const Services = () => (
+    <section className="bg-[#FAFAFA]" id="services">
+      {/* Section Header */}
+      <div className="px-6 py-24 md:py-32 max-w-[90rem] mx-auto border-b border-[#E5E5E5]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between">
+          <Reveal>
+            <div className="text-xs tracking-[0.3em] font-bold text-[#888] mb-6 uppercase">Our Service</div>
+            <h2 className="text-4xl md:text-7xl font-bold text-[#111] tracking-tighter">
+              事業内容
+            </h2>
+          </Reveal>
+          <Reveal delay={200}>
+            <p className="mt-8 md:mt-0 max-w-xl text-lg font-medium text-[#444] leading-relaxed text-right md:text-left">
+              商売の本質と金融知識を基盤に、<br />
+              個人と企業の「自律」と「継続的成長」を支援。
+            </p>
+          </Reveal>
+        </div>
+      </div>
+
+      {/* Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {[
+          {
+            id: "01",
+            title: "財務会計顧問",
+            en: "Financial Accounting",
+            desc: "法律・会計・税務の各分野に精通した専門家が在籍。数字を「管理する」だけでなく「活かす」財務会計を提供。",
+            icon: BarChart3
+          },
+          {
+            id: "02",
+            title: "FP業務",
+            en: "Financial Planning",
+            desc: "全国各地の企業・団体・自治体からの依頼により、1,500回以上の講演・セミナーを実施。人生と事業に寄り添う資金設計。",
+            icon: Users
+          },
+          {
+            id: "03",
+            title: "ビジネススクール",
+            en: "Business School",
+            desc: "単なるノウハウではなく、本質を捉え、自ら考え、生き抜く力――「人生力」を身につける実践型ビジネスセミナー。",
+            icon: GraduationCap,
+            highlight: true
+          },
+          {
+            id: "04",
+            title: "教育制度 (OLG)",
+            en: "One LIFE Group",
+            desc: "営業スキルと人生力を身につけ、一から学び、実践し、収入を得ていくための中核教育プログラム。",
+            icon: Briefcase,
+            highlight: true
+          },
+          {
+            id: "05",
+            title: "海外進出サポート",
+            en: "Global Support",
+            desc: "海外での生活・事業経験を持つメンバーが培った、知識と人脈を活かし、海外展開を視野に入れた事業構築を支援。",
+            icon: Globe
+          },
+          {
+            id: "06",
+            title: "企業研修",
+            en: "Consulting & Training",
+            desc: "商売の本質と高度な金融知識を融合した、実践型支援。結果にフォーカスし、最後まで伴走します。",
+            icon: MessageSquare
+          }
+        ].map((item, i) => (
+          <Reveal key={i} delay={i * 100} className="h-full">
+            <div 
+              className={`
+                group relative p-12 h-full flex flex-col justify-between border-b border-r border-[#E5E5E5]
+                ${item.highlight ? 'bg-[#1A1A1A] text-white hover:bg-[#000]' : 'bg-white text-[#111] hover:bg-white hover:shadow-2xl hover:shadow-black/5 hover:z-10'}
+                transition-all duration-500 ease-out
+              `}
+            >
+              <div className="flex justify-between items-start mb-12">
+                <span className={`text-xs font-bold tracking-widest ${item.highlight ? 'text-white/30' : 'text-black/20'}`}>
+                  {item.id}
+                </span>
+                <item.icon className={`w-6 h-6 ${item.highlight ? 'text-white' : 'text-[#111]'} transition-transform duration-500 group-hover:scale-110`} />
+              </div>
+
+              <div className="relative z-10 flex-grow">
+                <h3 className="text-2xl font-bold mb-2 tracking-tight group-hover:translate-x-1 transition-transform duration-300">{item.title}</h3>
+                <p className={`text-[10px] font-bold tracking-[0.2em] uppercase mb-6 ${item.highlight ? 'text-white/50' : 'text-black/40'}`}>
+                  {item.en}
+                </p>
+                <p className={`text-sm leading-[1.8] ${item.highlight ? 'text-gray-300' : 'text-gray-600'}`}>
+                  {item.desc}
+                </p>
+              </div>
+
+              <div className={`mt-8 pt-6 border-t ${item.highlight ? 'border-white/10' : 'border-black/5'}`}>
+                <div className="flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
+                  <span className="text-xs font-bold uppercase tracking-widest">View More</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+
+  const Proof = () => (
+    <section className="py-32 md:py-48 px-6 bg-white border-b border-[#E5E5E5]">
+      <div className="max-w-[90rem] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
+          <Reveal>
+            <h2 className="text-5xl md:text-8xl font-bold text-[#111] leading-[0.9] tracking-tighter mb-12">
+              PROVEN<br />RESULTS.
+            </h2>
+            <div className="w-20 h-1 bg-[#111]"></div>
+          </Reveal>
+          
+          <div className="flex flex-col justify-center">
+            <Reveal delay={200}>
+              <h3 className="text-xl font-bold mb-12 text-[#111]">信頼の根拠</h3>
+            </Reveal>
+            <ul className="space-y-6">
+              {[
+                "金融・経済教育における全国規模の講演実績",
+                "個人・企業・団体を横断した1万人超の相談経験",
+                "国内外にまたがる10年以上の実務支援",
+                "成果を出し続ける人材・チームの育成実績"
+              ].map((proof, i) => (
+                <Reveal key={i} delay={300 + (i * 100)}>
+                  <li className="flex items-start group cursor-default">
+                    <ArrowUpRight className="w-5 h-5 mr-6 flex-shrink-0 text-[#888] transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-black" />
+                    <span className="text-lg md:text-xl font-medium text-[#333] border-b border-transparent pb-2 group-hover:border-[#111] transition-all duration-300">
+                      {proof}
+                    </span>
+                  </li>
+                </Reveal>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+
+  const Company = () => (
+    <section className="py-32 px-6 bg-[#FAFAFA] border-b border-[#E5E5E5]">
+      <div className="max-w-4xl mx-auto text-center">
+        <Reveal>
+          <h2 className="text-xs font-bold tracking-[0.5em] uppercase mb-16 text-[#888]">Company Profile</h2>
+          
+          <div className="text-4xl md:text-5xl font-bold text-[#111] mb-10 tracking-tight">
+            One.Company
+          </div>
+          
+          <div className="space-y-3 text-base font-medium text-[#444]">
+            <p>株式会社One</p>
+            <p>金融・教育・コンサルティング事業</p>
+          </div>
+
+          <div className="w-px h-16 bg-[#DDD] mx-auto my-12"></div>
+
+          <p className="text-xl md:text-2xl font-normal leading-relaxed text-[#111] max-w-2xl mx-auto">
+            自らが成長し続け、人間力ある人財を育み、<br />
+            経済活動を通して地球に貢献する
+          </p>
+        </Reveal>
+      </div>
+    </section>
+  );
+
+  const Contact = () => (
+    <section className="py-32 md:py-48 px-6 bg-[#111] text-white text-center relative overflow-hidden" id="contact">
+      <div className="max-w-5xl mx-auto relative z-10">
+        <Reveal>
+          <h2 className="text-5xl md:text-8xl font-bold mb-12 tracking-tighter leading-none">
+            CONTACT
+          </h2>
+        </Reveal>
+        <Reveal delay={200}>
+          <p className="text-lg md:text-xl font-normal text-gray-400 mb-20 max-w-2xl mx-auto leading-relaxed">
+            まずは、今抱えている課題や想いをお聞かせください。<br />
+            最適な一歩を、共に考えます。
+          </p>
+        </Reveal>
+        
+        <Reveal delay={400}>
+          <div className="flex flex-col md:flex-row gap-6 justify-center">
+            {["無料相談フォーム", "法人向け研修・相談", "講演・セミナー依頼"].map((btn, i) => (
+              <button 
+                key={i} 
+                className="group relative py-6 px-10 border border-white/20 text-white text-sm font-bold tracking-widest overflow-hidden hover:bg-white hover:text-black transition-all duration-500"
+              >
+                <span className="relative z-10">{btn}</span>
+              </button>
+            ))}
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+
+  return (
+    <div className="font-sans antialiased text-[#111] bg-white selection:bg-[#111] selection:text-white overflow-x-hidden">
+      <style>{`
+        @keyframes slideDown {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(200%); }
+        }
+        .animate-slideDown {
+          animation: slideDown 2s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+        }
+      `}</style>
+      
+      {/* Navigation */}
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ease-in-out ${scrolled ? 'bg-white/90 backdrop-blur-md border-b border-[#E5E5E5] py-4 shadow-sm' : 'bg-transparent py-8'}`}>
+        <div className="max-w-[95%] mx-auto px-6 flex justify-between items-center">
+          <div className="text-2xl font-bold tracking-tighter">One.</div>
+          <div className="hidden md:flex space-x-12 text-xs font-bold tracking-widest uppercase">
+            <a href="#services" className="hover:text-gray-500 transition-colors">Service</a>
+            <a href="#contact" className="hover:text-gray-500 transition-colors">Contact</a>
+          </div>
+        </div>
+      </nav>
+
+      <main>
+        <Hero />
+        <Philosophy />
+        <Services />
+        <Proof />
+        <Company />
+        <Contact />
+      </main>
+
+      <footer className="py-12 px-6 bg-[#111] text-white border-t border-white/10">
+        <div className="max-w-[90rem] mx-auto flex flex-col md:flex-row justify-between items-end">
+          <div className="text-4xl font-bold tracking-tighter mb-8 md:mb-0 opacity-20">One.</div>
+          <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500">
+            © {new Date().getFullYear()} One. All Rights Reserved.
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default App;# corporatesite
