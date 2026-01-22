@@ -254,8 +254,6 @@
 
                 const particlesData = [];
                 const positions = new Float32Array(particleCount * 3);
-                // Pre-allocate line positions buffer (Max lines = count * count * 2 points * 3 coords)
-                // Realistically much fewer, but safe buffer size
                 const linePositions = new Float32Array(particleCount * particleCount * 3);
 
                 // 1. Initialize Particles
@@ -312,22 +310,17 @@
                     let vertexpos = 0;
                     let numConnected = 0;
 
-                    // Update Particles
                     for (let i = 0; i < particleCount; i++) {
                         const p = particlesData[i];
-                        
-                        // Update position
+
                         positions[i * 3]     += p.velocity.x;
                         positions[i * 3 + 1] += p.velocity.y;
                         positions[i * 3 + 2] += p.velocity.z;
 
-                        // Bounce off boundary
                         if (positions[i * 3] < -rHalf || positions[i * 3] > rHalf) p.velocity.x = -p.velocity.x;
                         if (positions[i * 3 + 1] < -rHalf || positions[i * 3 + 1] > rHalf) p.velocity.y = -p.velocity.y;
                         if (positions[i * 3 + 2] < -rHalf || positions[i * 3 + 2] > rHalf) p.velocity.z = -p.velocity.z;
 
-                        // Check Connections
-                        // Loop from i+1 to avoid duplicate checks and self-check
                         for (let j = i + 1; j < particleCount; j++) {
                             const dx = positions[i * 3] - positions[j * 3];
                             const dy = positions[i * 3 + 1] - positions[j * 3 + 1];
@@ -335,7 +328,6 @@
                             const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
                             if (dist < connectionDist) {
-                                // Add line vertices
                                 linePositions[vertexpos++] = positions[i * 3];
                                 linePositions[vertexpos++] = positions[i * 3 + 1];
                                 linePositions[vertexpos++] = positions[i * 3 + 2];
@@ -349,12 +341,10 @@
                         }
                     }
 
-                    // Update Buffers
                     linesMesh.geometry.setDrawRange(0, numConnected * 2);
                     linesMesh.geometry.attributes.position.needsUpdate = true;
                     particleSystem.geometry.attributes.position.needsUpdate = true;
 
-                    // Global Rotation (Slow spin)
                     group.rotation.y += 0.0003;
                     group.rotation.x += 0.0001;
 
@@ -465,16 +455,16 @@
                         <div className="absolute top-0 left-0 md:-left-20 w-full h-full flex items-start justify-start pointer-events-none select-none z-0 overflow-visible">
                             <div className="text-[20rem] md:text-[35rem] lg:text-[45rem] font-serif-en font-bold text-[#000] leading-none one-symbol origin-top-left -mt-32">One</div>
                         </div>
+
                         <div className="max-w-6xl slide-up relative z-10">
                             <h1 className="h1-responsive font-serif-jp font-bold tracking-wide text-[#111] mb-16 w-full">
                                 <span className="block animate-rise" style={{animationDelay: '1.5s'}}>自らが成長し続け、</span>
                                 <span className="block animate-rise" style={{animationDelay: '1.9s'}}>人間力のある人財を育み、</span>
                                 <span className="block animate-rise" style={{animationDelay: '2.3s'}}>
-                                    <span className="block animate-rise" style={{ animationDelay: '2.3s' }}>
-  <span className="ib whitespace-nowrap">
-    経済活動を通してこの地球に貢献する。
-  </span>
-</span>
+                                    <span className="ib whitespace-nowrap">経済活動を通してこの地球に貢献する。</span>
+                                </span>
+                            </h1>
+
                             <div className="pl-6 border-l border-gray-200 animate-rise" style={{animationDelay: '2.7s'}}>
                                 <h2 className="text-lg md:text-xl text-gray-600 mb-6 font-normal tracking-wide">
                                     <span className="ib">社会を豊かにする、</span><span className="ib">新たな一歩を“ココ”から。</span>
@@ -484,6 +474,7 @@
                                 </p>
                             </div>
                         </div>
+
                         <div className="py-20 slide-up relative z-10" style={{animationDelay: '3.0s'}}>
                             <button onClick={() => navigate('services')} className="group relative inline-flex items-center justify-center px-12 py-5 bg-[#111] text-white text-xs font-bold tracking-widest overflow-hidden transition-all hover:bg-[#333]">
                                 <span className="relative z-10">事業内容を見る</span>
@@ -491,6 +482,7 @@
                         </div>
                     </section>
 
+                    <!-- 以降はあなたのコードのまま（内容変更なし） -->
                     {/* Message */}
                     <section className="px-6 md:px-12 py-32 border-t border-gray-100 relative z-10 bg-white">
                         <div className="max-w-4xl mx-auto">
