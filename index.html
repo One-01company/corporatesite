@@ -54,7 +54,7 @@
         
         /* H1 Typography Control */
         .h1-responsive {
-            font-size: clamp(24px, 5vw, 80px);
+            font-size: clamp(24px, 4.5vw, 64px); /* Adjusted for better fit */
             line-height: 1.6;
         }
         
@@ -89,7 +89,7 @@
         /* Utility */
         .text-balance { text-wrap: balance; }
         .border-theme { border-color: #E5E5E5; }
-        .inline-block-text { display: inline-block; }
+        .ib { display: inline-block; } /* Shorthand for inline-block */
     </style>
 </head>
 <body>
@@ -103,15 +103,15 @@
             return (
                 <button onClick={() => navigate('home')} className="hover:opacity-60 transition-opacity flex items-center">
                     <img 
-                        src=https:"https://raw.githubusercontent.com/One-01company/corporatesite/main/2.png"
+                        src="https://raw.githubusercontent.com/One-01company/corporatesite/main/2.png" 
                         alt="One Logo" 
-                        className="h-28 w-auto" 
+                        className="h-8 w-auto" 
                     />
                 </button>
             );
         };
 
-        // --- Data: Service Contents (Hierarchical) ---
+        // --- Data: Service Contents (Semantic Line Breaks Applied) ---
         const SERVICES_HIERARCHY = [
             {
                 category: "01 学び",
@@ -121,13 +121,13 @@
                         id: "school",
                         title: "ビジネススクール",
                         enTitle: "Business School",
-                        summary: "現役の実践者から学ぶ、<br>生き抜くための「人生力」養成講座。",
+                        summary: "<span class='ib'>現役の実践者から学ぶ、</span><br><span class='ib'>生き抜くための</span><span class='ib'>「人生力」養成講座。</span>",
                         proof: "講師陣の実務経験：平均10年以上",
                         details: {
-                            why: "変化の激しい時代において、小手先のテクニックはすぐに陳腐化します。必要なのは、どんな環境でも自ら課題を発見し、解決できる「本質的な思考力」と「人間力」です。私たちは、一過性の情報ではなく、一生使える思考のOSをインストールする場所を提供します。",
-                            what: "営業・経営・財務・税務・ファイナンス。これらを10年以上にわたり最前線で実践し続けてきたメンバーが、教科書にはない「現場の真理」を体系化して提供します。成功事例だけでなく、数多の失敗から導き出された生存戦略を学びます。",
-                            how: "一方的な講義形式ではなく、対話とワークショップを重視した実践型プログラムです。知識を詰め込むのではなく、自らの頭で考え、言語化し、行動に移すプロセスを繰り返すことで、身体知として定着させます。",
-                            who: "【向いている人】自らの人生にオーナーシップを持ちたい方、本質的な実力をつけたい方、視座を高めたい方。\n【向いていない人】楽をして短期間で稼ぎたい方、受身で答えだけを求める方。"
+                            why: "<span class='ib'>変化の激しい時代において、</span><span class='ib'>小手先のテクニックは</span><span class='ib'>すぐに陳腐化します。</span><span class='ib'>必要なのは、</span><span class='ib'>どんな環境でも</span><span class='ib'>自ら課題を発見し、</span><span class='ib'>解決できる</span><span class='ib'>「本質的な思考力」と</span><span class='ib'>「人間力」です。</span><span class='ib'>私たちは、</span><span class='ib'>一過性の情報ではなく、</span><span class='ib'>一生使える思考のOSを</span><span class='ib'>インストールする場所を</span><span class='ib'>提供します。</span>",
+                            what: "<span class='ib'>営業・経営・財務・税務・ファイナンス。</span><span class='ib'>これらを10年以上にわたり</span><span class='ib'>最前線で実践し続けてきたメンバーが、</span><span class='ib'>教科書にはない</span><span class='ib'>「現場の真理」を</span><span class='ib'>体系化して提供します。</span><span class='ib'>成功事例だけでなく、</span><span class='ib'>数多の失敗から導き出された</span><span class='ib'>生存戦略を学びます。</span>",
+                            how: "<span class='ib'>一方的な講義形式ではなく、</span><span class='ib'>対話とワークショップを重視した</span><span class='ib'>実践型プログラムです。</span><span class='ib'>知識を詰め込むのではなく、</span><span class='ib'>自らの頭で考え、</span><span class='ib'>言語化し、</span><span class='ib'>行動に移すプロセスを</span><span class='ib'>繰り返すことで、</span><span class='ib'>身体知として定着させます。</span>",
+                            who: "【向いている人】<br><span class='ib'>自らの人生に</span><span class='ib'>オーナーシップを持ちたい方、</span><span class='ib'>本質的な実力をつけたい方、</span><span class='ib'>視座を高めたい方。</span><br><br>【向いていない人】<br><span class='ib'>楽をして短期間で稼ぎたい方、</span><span class='ib'>受身で答えだけを求める方。</span>"
                         }
                     }
                 ]
@@ -140,13 +140,13 @@
                         id: "olg",
                         title: "教育制度 (OLG)",
                         enTitle: "One LIFE Group",
-                        summary: "ゼロから学び、実践し、<br>収入を得ていく独自のエコシステム。",
+                        summary: "<span class='ib'>ゼロから学び、実践し、</span><br><span class='ib'>収入を得ていく</span><span class='ib'>独自のエコシステム。</span>",
                         proof: "成果創出までの期間：平均3〜6ヶ月",
                         details: {
-                            why: "座学で得た知識は、実践で使って初めて「知恵」になります。しかし、失敗が許されない環境では大胆な挑戦はできません。OLGは、安全に、かつ真剣にビジネスに挑戦できる「実践の場」を提供することで、成長速度を最大化します。",
-                            what: "OLG（One LIFE Group）は、営業スキルと人生力をゼロから学び、実際に収益を上げながら成長できる独自の教育プログラムおよびコミュニティです。商売の基本である「集客・販売・顧客対応」を、リアルの現場で体得します。",
-                            how: "段階別に設計されたカリキュラムと、専属メンターによる伴走支援を用意しています。まずは小さな成功体験を積み重ね、徐々に難易度の高い課題に挑むことで、確実に実力を養い、経済的自立へと導きます。",
-                            who: "【向いている人】現状を変えたいという強い意志がある方、泥臭い努力を厭わない方、仲間と共に成長したい方。\n【向いていない人】他責思考の方、約束を守れない方、即金性のみを求める方。"
+                            why: "<span class='ib'>座学で得た知識は、</span><span class='ib'>実践で使って初めて</span><span class='ib'>「知恵」になります。</span><span class='ib'>しかし、失敗が許されない環境では</span><span class='ib'>大胆な挑戦はできません。</span><span class='ib'>OLGは、</span><span class='ib'>安全に、かつ真剣に</span><span class='ib'>ビジネスに挑戦できる</span><span class='ib'>「実践の場」を提供することで、</span><span class='ib'>成長速度を最大化します。</span>",
+                            what: "<span class='ib'>OLG（One LIFE Group）は、</span><span class='ib'>営業スキルと人生力を</span><span class='ib'>ゼロから学び、</span><span class='ib'>実際に収益を上げながら成長できる</span><span class='ib'>独自の教育プログラムおよび</span><span class='ib'>コミュニティです。</span><span class='ib'>商売の基本である</span><span class='ib'>「集客・販売・顧客対応」を、</span><span class='ib'>リアルの現場で体得します。</span>",
+                            how: "<span class='ib'>段階別に設計されたカリキュラムと、</span><span class='ib'>専属メンターによる</span><span class='ib'>伴走支援を用意しています。</span><span class='ib'>まずは小さな成功体験を積み重ね、</span><span class='ib'>徐々に難易度の高い課題に</span><span class='ib'>挑むことで、</span><span class='ib'>確実に実力を養い、</span><span class='ib'>経済的自立へと導きます。</span>",
+                            who: "【向いている人】<br><span class='ib'>現状を変えたいという</span><span class='ib'>強い意志がある方、</span><span class='ib'>泥臭い努力を厭わない方、</span><span class='ib'>仲間と共に成長したい方。</span><br><br>【向いていない人】<br><span class='ib'>他責思考の方、</span><span class='ib'>約束を守れない方、</span><span class='ib'>即金性のみを求める方。</span>"
                         }
                     }
                 ]
@@ -159,26 +159,26 @@
                         id: "finance-advisory",
                         title: "財務会計顧問",
                         enTitle: "Finance Advisory",
-                        summary: "数字を「管理」するだけでなく、<br>未来をつくるために「活かす」。",
+                        summary: "<span class='ib'>数字を「管理」するだけでなく、</span><br><span class='ib'>未来をつくるために</span><span class='ib'>「活かす」。</span>",
                         proof: "国内外企業支援：10年以上",
                         details: {
-                            why: "多くの中小企業が、過去の数字をまとめるだけの「経理」に留まり、未来への投資判断を行えていません。成長企業に必要なのは、攻めるための資金を守り、増やすための「財務戦略」です。私たちは数字を武器に変えます。",
-                            what: "法律・会計・税務の専門家がチームを組み、記帳代行といった守りの業務から、資金調達、予実管理、M&Aなどの攻めの業務までをワンストップで支援。経営者の意思決定を、正確な数字とロジックで裏付けます。",
-                            how: "月次の数字報告を行うだけの顧問契約ではありません。経営会議への参加や事業計画の策定支援など、経営企画室の一員として深く入り込みます。また、節税対策やリスクマネジメントについても、最新の法令に基づき提案します。",
-                            who: "【向いている人】事業拡大を目指す経営者、数字に基づいた経営を行いたい方、上場を目指す企業。\n【向いていない人】脱税や粉飾など、不正な利益操作を求める方、数字に向き合う気がない方。"
+                            why: "<span class='ib'>多くの中小企業が、</span><span class='ib'>過去の数字をまとめるだけの</span><span class='ib'>「経理」に留まり、</span><span class='ib'>未来への投資判断を</span><span class='ib'>行えていません。</span><span class='ib'>成長企業に必要なのは、</span><span class='ib'>攻めるための資金を守り、</span><span class='ib'>増やすための「財務戦略」です。</span><span class='ib'>私たちは数字を武器に変えます。</span>",
+                            what: "<span class='ib'>法律・会計・税務の専門家が</span><span class='ib'>チームを組み、</span><span class='ib'>記帳代行といった守りの業務から、</span><span class='ib'>資金調達、予実管理、</span><span class='ib'>M&Aなどの攻めの業務までを</span><span class='ib'>ワンストップで支援。</span><span class='ib'>経営者の意思決定を、</span><span class='ib'>正確な数字とロジックで</span><span class='ib'>裏付けます。</span>",
+                            how: "<span class='ib'>月次の数字報告を行うだけの</span><span class='ib'>顧問契約ではありません。</span><span class='ib'>経営会議への参加や</span><span class='ib'>事業計画の策定支援など、</span><span class='ib'>経営企画室の一員として</span><span class='ib'>深く入り込みます。</span><span class='ib'>また、節税対策や</span><span class='ib'>リスクマネジメントについても、</span><span class='ib'>最新の法令に基づき提案します。</span>",
+                            who: "【向いている人】<br><span class='ib'>事業拡大を目指す経営者、</span><span class='ib'>数字に基づいた経営を行いたい方、</span><span class='ib'>上場を目指す企業。</span><br><br>【向いていない人】<br><span class='ib'>脱税や粉飾など、</span><span class='ib'>不正な利益操作を求める方、</span><span class='ib'>数字に向き合う気がない方。</span>"
                         },
                     },
                     {
                         id: "fp",
                         title: "ファイナンシャルプランニング",
                         enTitle: "Financial Planning",
-                        summary: "人生と事業に寄り添う、<br>守りと攻めの資金設計。",
+                        summary: "<span class='ib'>人生と事業に寄り添う、</span><br><span class='ib'>守りと攻めの資金設計。</span>",
                         proof: "累計相談実績：10,000人以上",
                         details: {
-                            why: "経済的な不安は、挑戦の足を止めます。個人と法人、現在と未来、守りと攻め。これらを俯瞰し、全体最適された資金計画があってこそ、人は安心してリスクを取ることができます。ライフプランは、挑戦の土台です。",
-                            what: "保険、証券、不動産など、特定の金融商品に偏らない中立的な立場から、クライアントのライフプランに基づいた最適な資産形成・防衛策を提案します。10,000人以上の相談データに基づく、再現性の高い設計図を描きます。",
-                            how: "現状の資産状況と価値観のヒアリングから始まり、ライフプランのシミュレーション、実行支援、そしてライフステージの変化に合わせた定期的な見直しまで。生涯にわたるパートナーとして伴走し続けます。",
-                            who: "【向いている人】長期的な視点で資産を形成したい方、家族や従業員を守りたい方、人生の選択肢を広げたい方。\n【向いていない人】一攫千金を狙う投機的な運用を求める方、短期的な利益しか見ない方。"
+                            why: "<span class='ib'>経済的な不安は、</span><span class='ib'>挑戦の足を止めます。</span><span class='ib'>個人と法人、</span><span class='ib'>現在と未来、</span><span class='ib'>守りと攻め。</span><span class='ib'>これらを俯瞰し、</span><span class='ib'>全体最適された資金計画があってこそ、</span><span class='ib'>人は安心して</span><span class='ib'>リスクを取ることができます。</span><span class='ib'>ライフプランは、</span><span class='ib'>挑戦の土台です。</span>",
+                            what: "<span class='ib'>保険、証券、不動産など、</span><span class='ib'>特定の金融商品に偏らない</span><span class='ib'>中立的な立場から、</span><span class='ib'>クライアントのライフプランに基づいた</span><span class='ib'>最適な資産形成・防衛策を</span><span class='ib'>提案します。</span><span class='ib'>10,000人以上の相談データに基づく、</span><span class='ib'>再現性の高い設計図を描きます。</span>",
+                            how: "<span class='ib'>現状の資産状況と</span><span class='ib'>価値観のヒアリングから始まり、</span><span class='ib'>ライフプランのシミュレーション、</span><span class='ib'>実行支援、そして</span><span class='ib'>ライフステージの変化に合わせた</span><span class='ib'>定期的な見直しまで。</span><span class='ib'>生涯にわたるパートナーとして</span><span class='ib'>伴走し続けます。</span>",
+                            who: "【向いている人】<br><span class='ib'>長期的な視点で</span><span class='ib'>資産を形成したい方、</span><span class='ib'>家族や従業員を守りたい方、</span><span class='ib'>人生の選択肢を広げたい方。</span><br><br>【向いていない人】<br><span class='ib'>一攫千金を狙う</span><span class='ib'>投機的な運用を求める方、</span><span class='ib'>短期的な利益しか見ない方。</span>"
                         }
                     }
                 ]
@@ -191,26 +191,26 @@
                         id: "overseas",
                         title: "海外進出サポート",
                         enTitle: "Global Support",
-                        summary: "リアルな経験と人脈で、<br>国境を越えた事業構築を支援。",
+                        summary: "<span class='ib'>リアルな経験と人脈で、</span><br><span class='ib'>国境を越えた</span><span class='ib'>事業構築を支援。</span>",
                         proof: "現地滞在歴：年の半分以上",
                         details: {
-                            why: "国内市場の縮小やグローバル化の波の中で、海外への挑戦は不可避になりつつあります。しかし、ネット上の情報と現地のリアルには大きな乖離があり、多くの企業が撤退を余儀なくされています。成功の鍵は「現地のリアル」を知ることにあります。",
-                            what: "現地での法人設立、ビザ取得、銀行口座開設から、生活基盤のセットアップ、信頼できる現地のパートナー紹介まで。実際に海外で事業を行い、生活しているメンバーが、実体験に基づいた泥臭いサポートを提供します。",
-                            how: "単なる代行業者としてではなく、共に現地を視察し、事業の可能性を議論し、立ち上げ業務までを共に汗をかいて行います。机上の空論ではなく、現地で通用する「生きたノウハウ」を提供します。",
-                            who: "【向いている人】海外で本気で事業を行いたい方、異文化を受け入れる柔軟性のある方、日本の常識を捨てられる方。\n【向いていない人】日本と同じサービス品質を海外に求める方、遠隔操作だけで成功したい方。"
+                            why: "<span class='ib'>国内市場の縮小や</span><span class='ib'>グローバル化の波の中で、</span><span class='ib'>海外への挑戦は</span><span class='ib'>不可避になりつつあります。</span><span class='ib'>しかし、ネット上の情報と</span><span class='ib'>現地のリアルには</span><span class='ib'>大きな乖離があり、</span><span class='ib'>多くの企業が撤退を</span><span class='ib'>余儀なくされています。</span><span class='ib'>成功の鍵は</span><span class='ib'>「現地のリアル」を知ることにあります。</span>",
+                            what: "<span class='ib'>現地での法人設立、</span><span class='ib'>ビザ取得、銀行口座開設から、</span><span class='ib'>生活基盤のセットアップ、</span><span class='ib'>信頼できる現地のパートナー紹介まで。</span><span class='ib'>実際に海外で事業を行い、</span><span class='ib'>生活しているメンバーが、</span><span class='ib'>実体験に基づいた</span><span class='ib'>泥臭いサポートを提供します。</span>",
+                            how: "<span class='ib'>単なる代行業者としてではなく、</span><span class='ib'>共に現地を視察し、</span><span class='ib'>事業の可能性を議論し、</span><span class='ib'>立ち上げ業務までを</span><span class='ib'>共に汗をかいて行います。</span><span class='ib'>机上の空論ではなく、</span><span class='ib'>現地で通用する</span><span class='ib'>「生きたノウハウ」を提供します。</span>",
+                            who: "【向いている人】<br><span class='ib'>海外で本気で</span><span class='ib'>事業を行いたい方、</span><span class='ib'>異文化を受け入れる</span><span class='ib'>柔軟性のある方、</span><span class='ib'>日本の常識を捨てられる方。</span><br><br>【向いていない人】<br><span class='ib'>日本と同じサービス品質を</span><span class='ib'>海外に求める方、</span><span class='ib'>遠隔操作だけで成功したい方。</span>"
                         }
                     },
                     {
                         id: "consulting",
                         title: "コンサルティング・企業研修",
                         enTitle: "Consulting & Training",
-                        summary: "結果にフォーカスし、<br>組織の自律を促す伴走支援。",
+                        summary: "<span class='ib'>結果にフォーカスし、</span><br><span class='ib'>組織の自律を促す</span><span class='ib'>伴走支援。</span>",
                         proof: "年商1億円超人材：多数輩出",
                         details: {
-                            why: "外部コンサルタントの綺麗なレポートだけでは、会社は変わりません。組織を変えるのは、現場の社員一人ひとりの意識と行動です。私たちは、組織の内側から変革を起こし、「自走する組織」を作ります。",
-                            what: "経営課題の抽出から、営業戦略の立案・実行、リーダーシップ研修まで。クライアントの課題に合わせて最適なチームを組成し、課題解決にあたります。特に「人間力」と「実務力」の両輪を鍛える研修には定評があります。",
-                            how: "「やってみせる」「やらせてみる」の精神で、現場と並走します。経営陣との対話だけでなく、現場社員との対話を重ね、組織全体の温度感を高めていきます。最終的にはコンサルタントがいなくても自走できる状態を目指します。",
-                            who: "【向いている人】組織の壁を突破したい経営者、次世代リーダーを育てたい企業、企業文化を変革したい方。\n【向いていない人】丸投げで結果だけを求める方、変化を恐れる方、痛みを伴う改革を拒む方。"
+                            why: "<span class='ib'>外部コンサルタントの</span><span class='ib'>綺麗なレポートだけでは、</span><span class='ib'>会社は変わりません。</span><span class='ib'>組織を変えるのは、</span><span class='ib'>現場の社員一人ひとりの</span><span class='ib'>意識と行動です。</span><span class='ib'>私たちは、</span><span class='ib'>組織の内側から変革を起こし、</span><span class='ib'>「自走する組織」を作ります。</span>",
+                            what: "<span class='ib'>経営課題の抽出から、</span><span class='ib'>営業戦略の立案・実行、</span><span class='ib'>リーダーシップ研修まで。</span><span class='ib'>クライアントの課題に合わせて</span><span class='ib'>最適なチームを組成し、</span><span class='ib'>課題解決にあたります。</span><span class='ib'>特に「人間力」と「実務力」の</span><span class='ib'>両輪を鍛える研修には</span><span class='ib'>定評があります。</span>",
+                            how: "<span class='ib'>「やってみせる」「やらせてみる」の</span><span class='ib'>精神で、現場と並走します。</span><span class='ib'>経営陣との対話だけでなく、</span><span class='ib'>現場社員との対話を重ね、</span><span class='ib'>組織全体の温度感を</span><span class='ib'>高めていきます。</span><span class='ib'>最終的にはコンサルタントがいなくても</span><span class='ib'>自走できる状態を目指します。</span>",
+                            who: "【向いている人】<br><span class='ib'>組織の壁を突破したい経営者、</span><span class='ib'>次世代リーダーを育てたい企業、</span><span class='ib'>企業文化を変革したい方。</span><br><br>【向いていない人】<br><span class='ib'>丸投げで結果だけを求める方、</span><span class='ib'>変化を恐れる方、</span><span class='ib'>痛みを伴う改革を拒む方。</span>"
                         }
                     }
                 ]
@@ -457,21 +457,21 @@
                                 <span className="block animate-rise" style={{animationDelay: '1.5s'}}>自らが成長し続け、</span>
                                 <span className="block animate-rise" style={{animationDelay: '1.9s'}}>人間力のある人財を育み、</span>
                                 <span className="block animate-rise" style={{animationDelay: '2.3s'}}>
-                                    <span className="inline-block whitespace-nowrap">経済活動を通してこの地球に貢献する。</span>
+                                    <span className="ib">経済活動を通して</span><span className="ib">この地球に</span><span className="ib">貢献する。</span>
                                 </span>
                             </h1>
                             
                             <div className="pl-6 border-l border-gray-200 animate-rise" style={{animationDelay: '2.7s'}}>
                                 <h2 className="text-lg md:text-xl text-gray-600 mb-6 font-normal tracking-wide">
-                                    <span className="inline-block">社会を豊かにする、</span>
-                                    <span className="inline-block">新たな一歩を“ココ”から。</span>
+                                    <span className="ib">社会を豊かにする、</span>
+                                    <span className="ib">新たな一歩を“ココ”から。</span>
                                 </h2>
                                 <p className="text-sm md:text-base text-gray-500 leading-loose max-w-2xl">
-                                    <span className="inline-block">Oneは、情報やノウハウを売る会社ではありません。</span>
-                                    <span className="inline-block">商売の本質と金融知識を軸に、</span>
-                                    <span className="inline-block">個人と企業が「自ら考え、決断し、行動できる力」を育てる。</span><br class="hidden md:block"/>
-                                    <span className="inline-block">私たちは、成果と継続に責任を持つ、</span>
-                                    <span className="inline-block">伴走型のパートナーです。</span>
+                                    <span className="ib">Oneは、</span><span className="ib">情報やノウハウを</span><span className="ib">売る会社ではありません。</span>
+                                    <span className="ib">商売の本質と</span><span className="ib">金融知識を軸に、</span>
+                                    <span className="ib">個人と企業が</span><span className="ib">「自ら考え、決断し、行動できる力」を</span><span className="ib">育てる。</span><br class="hidden md:block"/>
+                                    <span className="ib">私たちは、</span><span className="ib">成果と継続に</span><span className="ib">責任を持つ、</span>
+                                    <span className="ib">伴走型の</span><span className="ib">パートナーです。</span>
                                 </p>
                             </div>
                         </div>
@@ -489,16 +489,16 @@
                             <SectionHeading en="Message" ja="Oneの想い" />
                             <div className="space-y-12">
                                 <p className="text-base md:text-lg leading-[2.4] text-gray-700 font-serif-jp text-balance">
-                                    <span className="inline-block">経済は目的ではなく、未来を支えるための手段である。</span><br/>
-                                    <span className="inline-block">私たちは、一過性の利益や表面的なテクニックには関心がありません。</span>
-                                    <span className="inline-block">10年、20年と続く「揺るぎない構造」を設計することこそが、</span>
-                                    <span className="inline-block">真の経営資産になると確信しているからです。</span>
+                                    <span className="ib">経済は目的ではなく、</span><span className="ib">未来を支えるための</span><span className="ib">手段である。</span><br/>
+                                    <span className="ib">私たちは、</span><span className="ib">一過性の利益や</span><span className="ib">表面的なテクニックには</span><span className="ib">関心がありません。</span>
+                                    <span className="ib">10年、20年と続く</span><span className="ib">「揺るぎない構造」を</span><span className="ib">設計することこそが、</span>
+                                    <span className="ib">真の経営資産になると</span><span className="ib">確信しているからです。</span>
                                 </p>
                                 <p className="text-base md:text-lg leading-[2.4] text-gray-700 font-serif-jp text-balance">
-                                    <span className="inline-block">精神と経済、その両輪が自律してこそ、</span>
-                                    <span className="inline-block">個人も企業も、持続的に成長することができます。</span>
-                                    <span className="inline-block">Oneは、一人ひとりの「意志ある一歩」から始まる成長を支え、</span>
-                                    <span className="inline-block">責任ある経済活動が循環する社会を目指します。</span>
+                                    <span className="ib">精神と経済、</span><span className="ib">その両輪が</span><span className="ib">自律してこそ、</span>
+                                    <span className="ib">個人も企業も、</span><span className="ib">持続的に成長することが</span><span className="ib">できます。</span>
+                                    <span className="ib">Oneは、</span><span className="ib">一人ひとりの</span><span className="ib">「意志ある一歩」から</span><span className="ib">始まる成長を支え、</span>
+                                    <span className="ib">責任ある経済活動が</span><span className="ib">循環する社会を</span><span className="ib">目指します。</span>
                                 </p>
                             </div>
                         </div>
@@ -512,19 +512,19 @@
                                 <div className="bg-white p-10 border border-gray-100">
                                     <h3 className="text-lg font-bold mb-4 font-serif-jp">01. 本質への回帰</h3>
                                     <p className="text-sm leading-loose text-gray-600 text-balance">
-                                        流行りの手法に飛びつくのではなく、「なぜやるのか」「誰のためにやるのか」という商売の原理原則に立ち返り、土台から再構築します。
+                                        <span className="ib">流行りの手法に</span><span className="ib">飛びつくのではなく、</span><span className="ib">「なぜやるのか」</span><span className="ib">「誰のためにやるのか」という</span><span className="ib">商売の原理原則に</span><span className="ib">立ち返り、</span><span className="ib">土台から再構築します。</span>
                                     </p>
                                 </div>
                                 <div className="bg-white p-10 border border-gray-100">
                                     <h3 className="text-lg font-bold mb-4 font-serif-jp">02. 泥臭い実践</h3>
                                     <p className="text-sm leading-loose text-gray-600 text-balance">
-                                        綺麗な戦略を描くだけでは意味がありません。現場に入り込み、共に汗をかき、痛みを分かち合いながら、成果が出るまで徹底的にやり抜きます。
+                                        <span className="ib">綺麗な戦略を</span><span className="ib">描くだけでは</span><span className="ib">意味がありません。</span><span className="ib">現場に入り込み、</span><span className="ib">共に汗をかき、</span><span className="ib">痛みを分かち合いながら、</span><span className="ib">成果が出るまで</span><span className="ib">徹底的にやり抜きます。</span>
                                     </p>
                                 </div>
                                 <div className="bg-white p-10 border border-gray-100">
                                     <h3 className="text-lg font-bold mb-4 font-serif-jp">03. 自律の促進</h3>
                                     <p className="text-sm leading-loose text-gray-600 text-balance">
-                                        私たちのゴールは、コンサルタントがいなくても回る組織を作ることです。依存させるのではなく、思考法とノウハウをすべて移管し、自走を促します。
+                                        <span className="ib">私たちのゴールは、</span><span className="ib">コンサルタントが</span><span className="ib">いなくても回る</span><span className="ib">組織を作ることです。</span><span className="ib">依存させるのではなく、</span><span className="ib">思考法とノウハウを</span><span className="ib">すべて移管し、</span><span className="ib">自走を促します。</span>
                                     </p>
                                 </div>
                             </div>
@@ -551,17 +551,17 @@
                             <SectionHeading en="Business Domain" ja="事業内容" />
                             <div className="grid md:grid-cols-2 gap-12 lg:gap-24">
                                 <div>
-                                    <p className="text-sm leading-loose text-gray-600 mb-12 text-balance">
-                                        私たちのサービスは、単独で存在するのではなく、企業の成長フェーズに合わせた「階層構造」を持っています。学び、実践し、仕組みを設計し、そして拡張する。一貫した思想のもと、最適なソリューションを提供します。
+                                    <p className="text-base leading-loose text-gray-700 mb-12 text-balance">
+                                        <span className="ib">私たちのサービスは、</span><span className="ib">単独で存在するのではなく、</span><span className="ib">企業の成長フェーズに合わせた</span><span className="ib">「階層構造」を持っています。</span><span className="ib">学び、実践し、</span><span className="ib">仕組みを設計し、</span><span className="ib">そして拡張する。</span><span className="ib">一貫した思想のもと、</span><span className="ib">最適なソリューションを</span><span className="ib">提供します。</span>
                                     </p>
-                                    <button onClick={() => navigate('services')} className="text-xs font-bold border-b border-black pb-1 hover:opacity-60 transition-opacity">
+                                    <button onClick={() => navigate('services')} className="text-sm font-bold border-b border-black pb-1 hover:opacity-60 transition-opacity">
                                         詳細な構造を見る →
                                     </button>
                                 </div>
-                                <div className="space-y-4">
+                                <div className="space-y-2">
                                     {["ビジネススクール", "教育制度 (OLG)", "財務会計顧問・FP", "海外進出・企業研修"].map((s, i) => (
-                                        <div key={i} className="flex items-center py-4 border-b border-gray-100 text-sm text-gray-800">
-                                            <span className="text-xs text-gray-400 w-12 font-serif-en">0{i+1}</span>
+                                        <div key={i} className="flex items-center py-6 border-b border-gray-200 text-lg md:text-xl font-medium text-[#111] tracking-wide hover:pl-4 transition-all duration-300 cursor-default">
+                                            <span className="text-sm text-gray-400 w-16 font-serif-en">0{i+1}</span>
                                             {s}
                                         </div>
                                     ))}
@@ -575,8 +575,8 @@
                         <div className="max-w-4xl mx-auto text-center">
                             <h2 className="text-2xl md:text-3xl font-serif-en italic mb-6 text-[#111]">Contact</h2>
                             <p className="text-sm md:text-base text-gray-600 mb-10 leading-loose text-balance">
-                                まずは、今抱えている課題や想いをお聞かせください。<br/>
-                                最適な一歩を、共に考えます。
+                                <span className="ib">まずは、</span><span className="ib">今抱えている課題や</span><span className="ib">想いをお聞かせください。</span><br/>
+                                <span className="ib">最適な一歩を、</span><span className="ib">共に考えます。</span>
                             </p>
                             <div className="flex flex-col sm:flex-row gap-6 justify-center">
                                 <button className="py-4 px-16 bg-[#111] text-white text-xs font-bold tracking-widest hover:bg-gray-800 transition-colors shadow-lg">
@@ -597,9 +597,9 @@
                         <span className="text-xs font-serif-en text-gray-400 tracking-widest mb-4 block italic">Structure of Growth</span>
                         <h1 className="text-3xl md:text-4xl font-serif-jp font-bold mb-8 text-[#111]">成長の階層構造</h1>
                         <p className="text-sm text-gray-600 max-w-2xl leading-loose text-balance">
-                            Oneの事業は、単なるサービスの羅列ではありません。<br/>
-                            「学び」から始まり、「実践」を経て、「設計」し、「拡張」する。<br/>
-                            人が自立し、経済活動を行うためのプロセスそのものです。
+                            <span className="ib">Oneの事業は、</span><span className="ib">単なるサービスの羅列ではありません。</span><br/>
+                            <span className="ib">「学び」から始まり、</span><span className="ib">「実践」を経て、</span><span className="ib">「設計」し、</span><span className="ib">「拡張」する。</span><br/>
+                            <span className="ib">人が自立し、</span><span className="ib">経済活動を行うための</span><span className="ib">プロセスそのものです。</span>
                         </p>
                     </header>
 
@@ -639,8 +639,8 @@
                         <div className="max-w-4xl mx-auto text-center">
                             <h2 className="text-2xl md:text-3xl font-serif-en italic mb-6 text-[#111]">Contact</h2>
                             <p className="text-sm md:text-base text-gray-600 mb-10 leading-loose text-balance">
-                                どのフェーズからでも、ご相談いただけます。<br/>
-                                あなたの現状に合わせた最適なプランを提案します。
+                                <span className="ib">どのフェーズからでも、</span><span className="ib">ご相談いただけます。</span><br/>
+                                <span className="ib">あなたの現状に合わせた</span><span className="ib">最適なプランを提案します。</span>
                             </p>
                             <div className="flex flex-col sm:flex-row gap-6 justify-center">
                                 <button className="py-4 px-16 bg-[#111] text-white text-xs font-bold tracking-widest hover:bg-gray-800 transition-colors shadow-lg">
@@ -677,21 +677,21 @@
                             <div className="space-y-16">
                                 <div>
                                     <h3 className="text-xs font-bold tracking-widest text-[#111] mb-6 uppercase border-b border-black pb-2 inline-block">01 Why - なぜやるのか</h3>
-                                    <p className="text-sm leading-loose text-gray-600 text-balance">{data.details.why}</p>
+                                    <p className="text-sm leading-loose text-gray-600 text-balance" dangerouslySetInnerHTML={{ __html: data.details.why }} />
                                 </div>
                                 <div>
                                     <h3 className="text-xs font-bold tracking-widest text-[#111] mb-6 uppercase border-b border-black pb-2 inline-block">02 What - 提供価値</h3>
-                                    <p className="text-sm leading-loose text-gray-600 text-balance">{data.details.what}</p>
+                                    <p className="text-sm leading-loose text-gray-600 text-balance" dangerouslySetInnerHTML={{ __html: data.details.what }} />
                                 </div>
                             </div>
                             <div className="space-y-16">
                                 <div>
                                     <h3 className="text-xs font-bold tracking-widest text-[#111] mb-6 uppercase border-b border-black pb-2 inline-block">03 How - 進め方</h3>
-                                    <p className="text-sm leading-loose text-gray-600 text-balance">{data.details.how}</p>
+                                    <p className="text-sm leading-loose text-gray-600 text-balance" dangerouslySetInnerHTML={{ __html: data.details.how }} />
                                 </div>
                                 <div>
                                     <h3 className="text-xs font-bold tracking-widest text-[#111] mb-6 uppercase border-b border-black pb-2 inline-block">04 Who - 対象</h3>
-                                    <p className="text-sm leading-loose text-gray-600 whitespace-pre-wrap text-balance">{data.details.who}</p>
+                                    <p className="text-sm leading-loose text-gray-600 text-balance" dangerouslySetInnerHTML={{ __html: data.details.who }} />
                                 </div>
                             </div>
                         </div>
