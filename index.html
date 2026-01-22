@@ -55,8 +55,8 @@
         
         /* H1 Typography Control */
         .h1-responsive {
-            font-size: clamp(24px, 4.5vw, 64px);
-            line-height: 1.6;
+            font-size: clamp(28px, 5vw, 64px);
+            line-height: 1.5;
         }
         
         /* Animations */
@@ -100,8 +100,14 @@
         /* Utility */
         .text-balance { text-wrap: balance; }
         .border-theme { border-color: #E5E5E5; }
-        .ib { display: inline-block; } /* Shorthand for inline-block */
         .bg-alt { background-color: var(--color-bg-alt); }
+        
+        /* Inline Block Control for Responsive Text */
+        .ib { display: inline; }
+        @media (min-width: 768px) {
+            .ib { display: inline-block; }
+            .text-justify-inter-character { text-justify: inter-character; text-align: justify; }
+        }
         
         /* Layout Utilities */
         .sticky-col { position: sticky; top: 8rem; }
@@ -137,7 +143,7 @@
                         id: "school",
                         title: "ビジネススクール",
                         enTitle: "Business School",
-                        summary: "<span class='ib'>現役の実践者から学ぶ、</span><br><span class='ib'>生き抜くための</span><span class='ib'>「人生力」養成講座。</span>",
+                        summary: "<span class='ib'>現役の実践者から学ぶ、</span><br class='hidden md:block'><span class='ib'>生き抜くための</span><span class='ib'>「人生力」養成講座。</span>",
                         proof: "講師陣の実務経験：平均10年以上",
                         details: {
                             why: "<span class='ib'>変化の激しい時代において、</span><span class='ib'>小手先のテクニックは</span><span class='ib'>すぐに陳腐化します。</span><span class='ib'>必要なのは、</span><span class='ib'>どんな環境でも</span><span class='ib'>自ら課題を発見し、</span><span class='ib'>解決できる</span><span class='ib'>「本質的な思考力」と</span><span class='ib'>「人間力」です。</span><span class='ib'>私たちは、</span><span class='ib'>一過性の情報ではなく、</span><span class='ib'>一生使える思考のOSを</span><span class='ib'>インストールする場所を</span><span class='ib'>提供します。</span>",
@@ -157,7 +163,7 @@
                         id: "olg",
                         title: "教育制度 (OLG)",
                         enTitle: "One LIFE Group",
-                        summary: "<span class='ib'>ゼロから学び、実践し、</span><br><span class='ib'>収入を得ていく</span><span class='ib'>独自のエコシステム。</span>",
+                        summary: "<span class='ib'>ゼロから学び、実践し、</span><br class='hidden md:block'><span class='ib'>収入を得ていく</span><span class='ib'>独自のエコシステム。</span>",
                         proof: "成果創出までの期間：平均3〜6ヶ月",
                         details: {
                             why: "<span class='ib'>座学で得た知識は、</span><span class='ib'>実践で使って初めて</span><span class='ib'>「知恵」になります。</span><span class='ib'>しかし、</span><span class='ib'>失敗が許されない環境では</span><span class='ib'>大胆な挑戦はできません。</span><span class='ib'>OLGは、</span><span class='ib'>安全に、</span><span class='ib'>かつ真剣に</span><span class='ib'>ビジネスに挑戦できる</span><span class='ib'>「実践の場」を</span><span class='ib'>提供することで、</span><span class='ib'>成長速度を</span><span class='ib'>最大化します。</span>",
@@ -177,7 +183,7 @@
                         id: "finance-advisory",
                         title: "財務会計顧問",
                         enTitle: "Finance Advisory",
-                        summary: "<span class='ib'>数字を「管理」するだけでなく、</span><br><span class='ib'>未来をつくるために</span><span class='ib'>「活かす」。</span>",
+                        summary: "<span class='ib'>数字を「管理」するだけでなく、</span><br class='hidden md:block'><span class='ib'>未来をつくるために</span><span class='ib'>「活かす」。</span>",
                         proof: "国内外企業支援：10年以上",
                         details: {
                             why: "<span class='ib'>多くの中小企業が、</span><span class='ib'>過去の数字をまとめるだけの</span><span class='ib'>「経理」に留まり、</span><span class='ib'>未来への投資判断を</span><span class='ib'>行えていません。</span><span class='ib'>成長企業に必要なのは、</span><span class='ib'>攻めるための資金を守り、</span><span class='ib'>増やすための「財務戦略」です。</span><span class='ib'>私たちは数字を武器に変えます。</span>",
@@ -190,7 +196,7 @@
                         id: "fp",
                         title: "ファイナンシャルプランニング",
                         enTitle: "Financial Planning",
-                        summary: "<span class='ib'>人生と事業に寄り添う、</span><br><span class='ib'>守りと攻めの資金設計。</span>",
+                        summary: "<span class='ib'>人生と事業に寄り添う、</span><br class='hidden md:block'><span class='ib'>守りと攻めの資金設計。</span>",
                         proof: "累計相談実績：10,000人以上",
                         details: {
                             why: "<span class='ib'>経済的な不安は、</span><span class='ib'>挑戦の足を止めます。</span><span class='ib'>個人と法人、</span><span class='ib'>現在と未来、</span><span class='ib'>守りと攻め。</span><span class='ib'>これらを俯瞰し、</span><span class='ib'>全体最適された資金計画があってこそ、</span><span class='ib'>人は安心して</span><span class='ib'>リスクを取ることができます。</span><span class='ib'>ライフプランは、</span><span class='ib'>挑戦の土台です。</span>",
@@ -209,7 +215,7 @@
                         id: "overseas",
                         title: "海外進出サポート",
                         enTitle: "Global Support",
-                        summary: "<span class='ib'>リアルな経験と人脈で、</span><br><span class='ib'>国境を越えた</span><span class='ib'>事業構築を支援。</span>",
+                        summary: "<span class='ib'>リアルな経験と人脈で、</span><br class='hidden md:block'><span class='ib'>国境を越えた</span><span class='ib'>事業構築を支援。</span>",
                         proof: "現地滞在歴：年の半分以上",
                         details: {
                             why: "<span class='ib'>国内市場の縮小や</span><span class='ib'>グローバル化の波の中で、</span><span class='ib'>海外への挑戦は</span><span class='ib'>不可避になりつつあります。</span><span class='ib'>しかし、ネット上の情報と</span><span class='ib'>現地のリアルには</span><span class='ib'>大きな乖離があり、</span><span class='ib'>多くの企業が撤退を</span><span class='ib'>余儀なくされています。</span><span class='ib'>成功の鍵は</span><span class='ib'>「現地のリアル」を知ることにあります。</span>",
@@ -222,7 +228,7 @@
                         id: "consulting",
                         title: "コンサルティング・企業研修",
                         enTitle: "Consulting & Training",
-                        summary: "<span class='ib'>結果にフォーカスし、</span><br><span class='ib'>組織の自律を促す</span><span class='ib'>伴走支援。</span>",
+                        summary: "<span class='ib'>結果にフォーカスし、</span><br class='hidden md:block'><span class='ib'>組織の自律を促す</span><span class='ib'>伴走支援。</span>",
                         proof: "年商1億円超人材：多数輩出",
                         details: {
                             why: "<span class='ib'>外部コンサルタントの</span><span class='ib'>綺麗なレポートだけでは、</span><span class='ib'>会社は変わりません。</span><span class='ib'>組織を変えるのは、</span><span class='ib'>現場の社員一人ひとりの</span><span class='ib'>意識と行動です。</span><span class='ib'>私たちは、</span><span class='ib'>組織の内側から変革を起こし、</span><span class='ib'>「自走する組織」を作ります。</span>",
@@ -266,8 +272,6 @@
 
                 const particlesData = [];
                 const positions = new Float32Array(particleCount * 3);
-                // Pre-allocate line positions buffer (Max lines = count * count * 2 points * 3 coords)
-                // Realistically much fewer, but safe buffer size
                 const linePositions = new Float32Array(particleCount * particleCount * 3);
 
                 // 1. Initialize Particles
@@ -339,7 +343,6 @@
                         if (positions[i * 3 + 2] < -rHalf || positions[i * 3 + 2] > rHalf) p.velocity.z = -p.velocity.z;
 
                         // Check Connections
-                        // Loop from i+1 to avoid duplicate checks and self-check
                         for (let j = i + 1; j < particleCount; j++) {
                             const dx = positions[i * 3] - positions[j * 3];
                             const dy = positions[i * 3 + 1] - positions[j * 3 + 1];
@@ -519,17 +522,14 @@
                                     <span className="inline-block whitespace-nowrap">人間力のある人財を育み、</span>
                                 </span>
                                 <span className="block animate-rise-slow" style={{animationDelay: '2.5s'}}>
-                                    <span className="inline-block whitespace-nowrap">経済活動を通してこの地球に貢献する。</span>
-                                    
-                            
-                              </span>
+                                    <span className="ib">経済活動を通して</span><br class="block md:hidden" /><span className="ib whitespace-nowrap">この地球に貢献する。</span>
                             </h1>
-                            <div className="pl-6 border-l border-gray-200 animate-rise" style={{animationDelay: '2.7s'}}>
+                            <div className="pl-0 md:pl-6 border-l-0 md:border-l border-gray-200 animate-rise" style={{animationDelay: '2.7s'}}>
                                 <h2 className="text-lg md:text-xl text-gray-600 mb-6 font-normal tracking-wide">
                                     <span className="ib">社会を豊かにする、</span><span className="ib">新たな一歩を“ココ”から。</span>
                                 </h2>
                                 <p className="text-sm md:text-base text-gray-500 leading-loose max-w-2xl">
-                                    <span className="ib">Oneは、</span><span className="ib">情報やノウハウを</span><span className="ib">売る会社ではありません。</span><span className="ib">商売の本質と</span><span className="ib">金融知識を軸に、</span><span className="ib">個人と企業が</span><span className="ib">「自ら考え、決断し、行動できる力」を</span><span className="ib">育てる。</span><br class="hidden md:block"/><span className="ib">私たちは、</span><span className="ib">成果と継続に</span><span className="ib">責任を持つ、</span><span className="ib">伴走型の</span><span className="ib">パートナーです。</span>
+                                    <span className="ib">Oneは、</span><span className="ib">情報やノウハウを</span><span className="ib">売る会社ではありません。</span><span className="ib">商売の本質と</span><span className="ib">金融知識を軸に、</span><span className="ib">個人と企業が</span><span className="ib">「自ら考え、決断し、行动できる力」を</span><span className="ib">育てる。</span><br class="hidden md:block"/><span className="ib">私たちは、</span><span className="ib">成果と継続に</span><span className="ib">責任を持つ、</span><span className="ib">伴走型の</span><span className="ib">パートナーです。</span>
                                 </p>
                             </div>
                         </div>
@@ -540,7 +540,7 @@
                         </div>
                     </section>
 
-                    {/* Message Section - Rebalanced */}
+                    {/* Message */}
                     <section className="px-6 md:px-12 py-32 border-t border-gray-100 relative z-10 bg-alt">
                         <div className="max-w-7xl mx-auto">
                             <div className="grid md:grid-cols-12 gap-16">
