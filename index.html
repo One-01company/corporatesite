@@ -16,14 +16,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     
     <!-- Fonts -->
-    <!-- Added Noto Serif JP for weight and elegance -->
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
         /* Base Settings */
         :root {
             --color-text-main: #111111;
-            --color-text-sub: #555555;
+            --color-text-sub: #4a4a4a;
             --color-bg: #FFFFFF;
             --color-line: #E5E5E5;
         }
@@ -53,66 +52,44 @@
         }
         #canvas-container.loaded { opacity: 1; }
         
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { 
-            from { opacity: 0; transform: translateY(20px); } 
-            to { opacity: 1; transform: translateY(0); } 
+        /* H1 Typography Control */
+        .h1-responsive {
+            font-size: clamp(24px, 5vw, 80px);
+            line-height: 1.6;
         }
         
-        /* Text Blur-Rise Animation */
-        @keyframes textBlurRise {
-            0% {
-                opacity: 0;
-                transform: translateY(15px);
-                filter: blur(8px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-                filter: blur(0);
-            }
+        /* Animations */
+        @keyframes structuralRise {
+            0% { opacity: 0; transform: translateY(40px) scale(0.98); filter: blur(10px); }
+            100% { opacity: 0.10; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+        .one-symbol {
+            animation: structuralRise 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            will-change: transform, opacity, filter;
         }
 
-        .animate-text-rise {
-            opacity: 0; /* Initial state */
-            animation: textBlurRise 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        @keyframes textRise {
+            0% { opacity: 0; transform: translateY(20px); filter: blur(4px); }
+            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
-        
-        /* One Symbol Structural Rise Animation */
-        @keyframes structuralRise {
-            0% {
-                opacity: 0;
-                transform: translateY(60px) scale(0.98);
-                letter-spacing: 0.15em;
-                filter: blur(12px);
-            }
-            100% {
-                opacity: 0.06;
-                transform: translateY(0) scale(1);
-                letter-spacing: 0.02em;
-                filter: blur(0);
-            }
-        }
-        
-        .one-symbol {
-            animation: structuralRise 3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .animate-rise {
             opacity: 0;
-            will-change: transform, opacity, letter-spacing, filter;
+            animation: textRise 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes pageFade {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .page-transition {
+            animation: pageFade 0.8s ease-out forwards;
         }
         
-        .fade-in { animation: fadeIn 1.2s ease-out forwards; }
-        .slide-up { animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-        .delay-100 { animation-delay: 0.1s; }
-        .delay-200 { animation-delay: 0.2s; }
-        .delay-300 { animation-delay: 0.3s; }
-        
-        /* Typography Helpers */
+        /* Utility */
         .text-balance { text-wrap: balance; }
-        .tracking-widest-plus { letter-spacing: 0.2em; }
-        
-        /* Utilities */
-        .border-b-thin { border-bottom: 1px solid var(--color-line); }
+        .border-theme { border-color: #E5E5E5; }
+        .inline-block-text { display: inline-block; }
     </style>
 </head>
 <body>
@@ -120,6 +97,19 @@
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
+
+        // --- Logo Component (Image File) ---
+        const Logo = ({ navigate }) => {
+            return (
+                <button onClick={() => navigate('home')} className="hover:opacity-60 transition-opacity flex items-center">
+                    <img 
+                        src="1.png" 
+                        alt="One Logo" 
+                        className="h-8 w-auto" 
+                    />
+                </button>
+            );
+        };
 
         // --- Data: Service Contents (Hierarchical) ---
         const SERVICES_HIERARCHY = [
@@ -131,11 +121,14 @@
                         id: "school",
                         title: "ビジネススクール",
                         enTitle: "Business School",
-                        lead: "ノウハウのその先へ。<br>自ら考え、選択し、生き抜く「人生力」を。",
-                        desc: [
-                            "営業・経営・財務・税務・ファイナンス。これらを10年以上にわたり学び続け、実践してきたメンバーによって提供される、Oneオリジナルのビジネススクールです。",
-                            "私たちの目的は、単なるビジネススキルやノウハウの伝授ではありません。変化の激しい時代において、物事の本質を捉え、自ら考え、決断し、生き抜く力――すなわち「人生力」を身につけることにあります。"
-                        ]
+                        summary: "現役の実践者から学ぶ、<br>生き抜くための「人生力」養成講座。",
+                        proof: "講師陣の実務経験：平均10年以上",
+                        details: {
+                            why: "変化の激しい時代において、小手先のテクニックはすぐに陳腐化します。必要なのは、どんな環境でも自ら課題を発見し、解決できる「本質的な思考力」と「人間力」です。私たちは、一過性の情報ではなく、一生使える思考のOSをインストールする場所を提供します。",
+                            what: "営業・経営・財務・税務・ファイナンス。これらを10年以上にわたり最前線で実践し続けてきたメンバーが、教科書にはない「現場の真理」を体系化して提供します。成功事例だけでなく、数多の失敗から導き出された生存戦略を学びます。",
+                            how: "一方的な講義形式ではなく、対話とワークショップを重視した実践型プログラムです。知識を詰め込むのではなく、自らの頭で考え、言語化し、行動に移すプロセスを繰り返すことで、身体知として定着させます。",
+                            who: "【向いている人】自らの人生にオーナーシップを持ちたい方、本質的な実力をつけたい方、視座を高めたい方。\n【向いていない人】楽をして短期間で稼ぎたい方、受身で答えだけを求める方。"
+                        }
                     }
                 ]
             },
@@ -147,11 +140,14 @@
                         id: "olg",
                         title: "教育制度 (OLG)",
                         enTitle: "One LIFE Group",
-                        lead: "One LIFE Group.<br>学び、実践し、自立するための独自システム。",
-                        desc: [
-                            "OLGは、営業スキルと人生力をゼロから学び、実践し、収入を得ていくためのOne独自の教育プログラムおよびシステムです。",
-                            "座学だけの教育には限界があります。段階に応じた学びと実践を繰り返す構成により、知識だけで終わらせず、自立し、継続的に成長できる状態をつくります。"
-                        ]
+                        summary: "ゼロから学び、実践し、<br>収入を得ていく独自のエコシステム。",
+                        proof: "成果創出までの期間：平均3〜6ヶ月",
+                        details: {
+                            why: "座学で得た知識は、実践で使って初めて「知恵」になります。しかし、失敗が許されない環境では大胆な挑戦はできません。OLGは、安全に、かつ真剣にビジネスに挑戦できる「実践の場」を提供することで、成長速度を最大化します。",
+                            what: "OLG（One LIFE Group）は、営業スキルと人生力をゼロから学び、実際に収益を上げながら成長できる独自の教育プログラムおよびコミュニティです。商売の基本である「集客・販売・顧客対応」を、リアルの現場で体得します。",
+                            how: "段階別に設計されたカリキュラムと、専属メンターによる伴走支援を用意しています。まずは小さな成功体験を積み重ね、徐々に難易度の高い課題に挑むことで、確実に実力を養い、経済的自立へと導きます。",
+                            who: "【向いている人】現状を変えたいという強い意志がある方、泥臭い努力を厭わない方、仲間と共に成長したい方。\n【向いていない人】他責思考の方、約束を守れない方、即金性のみを求める方。"
+                        }
                     }
                 ]
             },
@@ -161,23 +157,29 @@
                 items: [
                     {
                         id: "finance-advisory",
-                        title: "財務会計顧問サービス",
+                        title: "財務会計顧問",
                         enTitle: "Finance Advisory",
-                        lead: "数字を「管理する」だけでなく、<br>未来をつくるために「活かす」財務会計へ。",
-                        desc: [
-                            "法律・会計・税務の各分野に精通した専門家が在籍。単なる記帳代行にとどまらず、国内外の企業支援の知見を活かし、経営者の意思決定を支える「攻めの財務」を提供します。",
-                            "キャッシュフローの構築から資金調達、投資判断まで。企業の成長フェーズに合わせた最適な財務戦略を立案し、実務レベルで伴走します。"
-                        ]
+                        summary: "数字を「管理」するだけでなく、<br>未来をつくるために「活かす」。",
+                        proof: "国内外企業支援：10年以上",
+                        details: {
+                            why: "多くの中小企業が、過去の数字をまとめるだけの「経理」に留まり、未来への投資判断を行えていません。成長企業に必要なのは、攻めるための資金を守り、増やすための「財務戦略」です。私たちは数字を武器に変えます。",
+                            what: "法律・会計・税務の専門家がチームを組み、記帳代行といった守りの業務から、資金調達、予実管理、M&Aなどの攻めの業務までをワンストップで支援。経営者の意思決定を、正確な数字とロジックで裏付けます。",
+                            how: "月次の数字報告を行うだけの顧問契約ではありません。経営会議への参加や事業計画の策定支援など、経営企画室の一員として深く入り込みます。また、節税対策やリスクマネジメントについても、最新の法令に基づき提案します。",
+                            who: "【向いている人】事業拡大を目指す経営者、数字に基づいた経営を行いたい方、上場を目指す企業。\n【向いていない人】脱税や粉飾など、不正な利益操作を求める方、数字に向き合う気がない方。"
+                        },
                     },
                     {
                         id: "fp",
                         title: "ファイナンシャルプランニング",
                         enTitle: "Financial Planning",
-                        lead: "1,500回以上の講演実績。<br>人生と事業に寄り添う、確かな資金設計。",
-                        desc: [
-                            "全国の企業・自治体からの依頼により、1,500回以上の講演・セミナーを実施。延べ1万人以上の相談実績をもとに、教科書的ではない「生きた知恵」を提供します。",
-                            "単なる商品提案ではありません。クライアントが守りたい価値観を共有し、それを育てるための経済的基盤を共に設計します。"
-                        ]
+                        summary: "人生と事業に寄り添う、<br>守りと攻めの資金設計。",
+                        proof: "累計相談実績：10,000人以上",
+                        details: {
+                            why: "経済的な不安は、挑戦の足を止めます。個人と法人、現在と未来、守りと攻め。これらを俯瞰し、全体最適された資金計画があってこそ、人は安心してリスクを取ることができます。ライフプランは、挑戦の土台です。",
+                            what: "保険、証券、不動産など、特定の金融商品に偏らない中立的な立場から、クライアントのライフプランに基づいた最適な資産形成・防衛策を提案します。10,000人以上の相談データに基づく、再現性の高い設計図を描きます。",
+                            how: "現状の資産状況と価値観のヒアリングから始まり、ライフプランのシミュレーション、実行支援、そしてライフステージの変化に合わせた定期的な見直しまで。生涯にわたるパートナーとして伴走し続けます。",
+                            who: "【向いている人】長期的な視点で資産を形成したい方、家族や従業員を守りたい方、人生の選択肢を広げたい方。\n【向いていない人】一攫千金を狙う投機的な運用を求める方、短期的な利益しか見ない方。"
+                        }
                     }
                 ]
             },
@@ -189,21 +191,27 @@
                         id: "overseas",
                         title: "海外進出サポート",
                         enTitle: "Global Support",
-                        lead: "国境を越える。<br>リアルな経験と人脈が、事業の可能性を広げる。",
-                        desc: [
-                            "年の半分以上を海外で生活し、事業を行うメンバーが在籍。机上の空論ではない、現地のリアルな経験に基づいたサポートを提供します。",
-                            "法人設立から生活基盤のセットアップまで。培ってきた知識と独自のグローバル人脈を活かし、海外展開を視野に入れた事業構築を支援します。"
-                        ]
+                        summary: "リアルな経験と人脈で、<br>国境を越えた事業構築を支援。",
+                        proof: "現地滞在歴：年の半分以上",
+                        details: {
+                            why: "国内市場の縮小やグローバル化の波の中で、海外への挑戦は不可避になりつつあります。しかし、ネット上の情報と現地のリアルには大きな乖離があり、多くの企業が撤退を余儀なくされています。成功の鍵は「現地のリアル」を知ることにあります。",
+                            what: "現地での法人設立、ビザ取得、銀行口座開設から、生活基盤のセットアップ、信頼できる現地のパートナー紹介まで。実際に海外で事業を行い、生活しているメンバーが、実体験に基づいた泥臭いサポートを提供します。",
+                            how: "単なる代行業者としてではなく、共に現地を視察し、事業の可能性を議論し、立ち上げ業務までを共に汗をかいて行います。机上の空論ではなく、現地で通用する「生きたノウハウ」を提供します。",
+                            who: "【向いている人】海外で本気で事業を行いたい方、異文化を受け入れる柔軟性のある方、日本の常識を捨てられる方。\n【向いていない人】日本と同じサービス品質を海外に求める方、遠隔操作だけで成功したい方。"
+                        }
                     },
                     {
                         id: "consulting",
                         title: "コンサルティング・企業研修",
                         enTitle: "Consulting & Training",
-                        lead: "Business Consulting.<br>結果にフォーカスし、最後まで伴走する。",
-                        desc: [
-                            "商売の本質と高度な金融知識を融合した、実践型支援を行います。私たちのコンサルティングは、綺麗なレポートを提出して終わりではありません。",
-                            "課題抽出から施策実行、成果創出まで。クライアントチームの一員として深く入り込み、結果が出るまで徹底的に伴走します。"
-                        ]
+                        summary: "結果にフォーカスし、<br>組織の自律を促す伴走支援。",
+                        proof: "年商1億円超人材：多数輩出",
+                        details: {
+                            why: "外部コンサルタントの綺麗なレポートだけでは、会社は変わりません。組織を変えるのは、現場の社員一人ひとりの意識と行動です。私たちは、組織の内側から変革を起こし、「自走する組織」を作ります。",
+                            what: "経営課題の抽出から、営業戦略の立案・実行、リーダーシップ研修まで。クライアントの課題に合わせて最適なチームを組成し、課題解決にあたります。特に「人間力」と「実務力」の両輪を鍛える研修には定評があります。",
+                            how: "「やってみせる」「やらせてみる」の精神で、現場と並走します。経営陣との対話だけでなく、現場社員との対話を重ね、組織全体の温度感を高めていきます。最終的にはコンサルタントがいなくても自走できる状態を目指します。",
+                            who: "【向いている人】組織の壁を突破したい経営者、次世代リーダーを育てたい企業、企業文化を変革したい方。\n【向いていない人】丸投げで結果だけを求める方、変化を恐れる方、痛みを伴う改革を拒む方。"
+                        }
                     }
                 ]
             }
@@ -212,7 +220,7 @@
         // Flattened data for detail lookup
         const ALL_SERVICES = SERVICES_HIERARCHY.flatMap(group => group.items.reduce((acc, item) => ({...acc, [item.id]: item}), {}));
 
-        // --- Three.js Background (Abstract Architecture) ---
+        // --- Three.js Background (Architectural Kinetics) ---
         const ThreeBackground = () => {
             const mountRef = useRef(null);
             useEffect(() => {
@@ -224,31 +232,28 @@
                 scene.fog = new THREE.FogExp2(0xffffff, 0.0015);
                 
                 const camera = new THREE.PerspectiveCamera(45, w/h, 1, 1000);
-                camera.position.z = 60;
+                camera.position.z = 80;
                 
                 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
                 renderer.setSize(w, h);
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
                 mountRef.current.appendChild(renderer.domElement);
 
-                // --- Geometry: Abstract Structure ---
                 const group = new THREE.Group();
                 scene.add(group);
 
-                // 1. Central Core (Icosahedron)
-                const coreGeo = new THREE.IcosahedronGeometry(15, 1);
-                const coreMat = new THREE.MeshBasicMaterial({ 
-                    color: 0xe5e5e5, 
-                    wireframe: true, 
-                    transparent: true, 
-                    opacity: 0.15 
-                });
-                const core = new THREE.Mesh(coreGeo, coreMat);
-                group.add(core);
+                // --- Geometry: Architectural Structure ---
+                const geometry = new THREE.IcosahedronGeometry(20, 1);
+                const wireMat = new THREE.MeshBasicMaterial({ color: 0xcccccc, wireframe: true, transparent: true, opacity: 0.15 });
+                const innerGeo = new THREE.IcosahedronGeometry(12, 0);
+                const innerMat = new THREE.MeshBasicMaterial({ color: 0x999999, wireframe: true, transparent: true, opacity: 0.1 });
+                const mesh1 = new THREE.Mesh(geometry, wireMat);
+                const mesh2 = new THREE.Mesh(innerGeo, innerMat);
+                group.add(mesh1);
+                group.add(mesh2);
 
-                // 2. Outer Rings (Torus)
-                const ringGeo = new THREE.TorusGeometry(22, 0.05, 16, 100);
-                const ringMat = new THREE.MeshBasicMaterial({ color: 0xcccccc, transparent: true, opacity: 0.2 });
+                const ringGeo = new THREE.TorusGeometry(30, 0.05, 16, 100);
+                const ringMat = new THREE.MeshBasicMaterial({ color: 0xdddddd, transparent: true, opacity: 0.3 });
                 const ring1 = new THREE.Mesh(ringGeo, ringMat);
                 const ring2 = new THREE.Mesh(ringGeo, ringMat);
                 ring1.rotation.x = Math.PI / 2;
@@ -257,48 +262,41 @@
                 group.add(ring1);
                 group.add(ring2);
 
-                // 3. Floating Nodes (Points)
+                // Floating Particles
                 const particlesCount = 200;
                 const posArray = new Float32Array(particlesCount * 3);
-                for(let i=0; i<particlesCount * 3; i++) {
-                    posArray[i] = (Math.random() - 0.5) * 100;
-                }
+                for(let i=0; i<particlesCount * 3; i++) { posArray[i] = (Math.random() - 0.5) * 100; }
                 const particlesGeom = new THREE.BufferGeometry();
                 particlesGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-                const particlesMat = new THREE.PointsMaterial({ 
-                    size: 0.15, color: 0xbbbbbb, transparent: true, opacity: 0.4 
-                });
+                const particlesMat = new THREE.PointsMaterial({ size: 0.15, color: 0xbbbbbb, transparent: true, opacity: 0.4 });
                 const particles = new THREE.Points(particlesGeom, particlesMat);
                 scene.add(particles);
 
-                // --- Animation ---
                 let animationId;
                 const animate = () => {
-                    group.rotation.y += 0.0005;
-                    group.rotation.x += 0.0002;
-                    particles.rotation.y -= 0.0002;
-                    
+                    mesh1.rotation.y += 0.0005; mesh1.rotation.x += 0.0002;
+                    mesh2.rotation.y -= 0.0003; mesh2.rotation.z += 0.0002;
+                    ring1.rotation.z += 0.0002; ring2.rotation.z -= 0.0002;
                     renderer.render(scene, camera);
                     animationId = requestAnimationFrame(animate);
                 };
                 animate();
 
-                // --- Resize ---
                 const handleResize = () => {
                     camera.aspect = window.innerWidth / window.innerHeight;
                     camera.updateProjectionMatrix();
                     renderer.setSize(window.innerWidth, window.innerHeight);
-                    // Mobile Adjustment
                     if (window.innerWidth < 768) {
-                        group.scale.set(0.7, 0.7, 0.7);
+                        group.scale.set(0.6, 0.6, 0.6);
+                        group.position.y = -10;
                     } else {
                         group.scale.set(1, 1, 1);
+                        group.position.y = 0;
                     }
                 };
                 window.addEventListener('resize', handleResize);
-                handleResize(); // Init
+                handleResize();
 
-                // Show canvas
                 document.getElementById('canvas-container').classList.add('loaded');
 
                 return () => {
@@ -314,9 +312,7 @@
         const Navigation = ({ navigate }) => (
             <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 py-6 transition-all">
                 <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
-                    <button onClick={() => navigate('home')} className="hover:opacity-60 transition-opacity">
-                        <img src="One - 27.png" alt="One." className="h-8 w-auto" />
-                    </button>
+                    <Logo navigate={navigate} />
                     <div className="flex space-x-8 md:space-x-12 text-[10px] md:text-xs font-bold tracking-widest uppercase text-[#555]">
                         <button onClick={() => navigate('services')} className="hover:text-black transition-colors">Services</button>
                         <a href="#contact" className="hover:text-black transition-colors">Contact</a>
@@ -331,26 +327,26 @@
                     <div className="flex flex-col md:flex-row justify-between items-start mb-20">
                         <div className="mb-12 md:mb-0">
                             <button onClick={() => navigate('home')} className="mb-6 block hover:opacity-60 transition-opacity">
-                                <span className="text-3xl font-bold tracking-tighter text-[#111]">株式会社One</span>
+                                <span className="text-2xl font-serif-jp font-bold text-[#111]">株式会社One</span>
                             </button>
-                            <address className="text-xs text-gray-500 not-italic leading-relaxed">
-                                株式会社One<br/>
-                                〒104-0061 東京都中央区銀座1丁目12番4号 N&E BLD.6F<br/>
+                            <address className="text-xs text-gray-500 not-italic leading-relaxed font-sans">
+                                〒104-0061<br/>
+                                東京都中央区銀座1丁目12番4号 N&E BLD.6F<br/>
                                 03-6820-9801
                             </address>
                         </div>
-                        <div className="text-xs text-gray-500 leading-loose">
+                        <div className="text-xs text-gray-500 leading-loose font-sans">
                             <ul className="space-y-2">
                                 <li>財務会計顧問サービス</li>
                                 <li>ファイナンシャルプランニング業務</li>
                                 <li>ビジネススクール</li>
-                                <li>教育制度（OLG / One LIFE Group）</li>
+                                <li>教育制度（OLG）</li>
                                 <li>コンサルティング・企業研修</li>
                                 <li>海外進出サポート</li>
                             </ul>
                         </div>
                     </div>
-                    <div className="text-[10px] text-gray-400 tracking-widest uppercase text-center md:text-left border-t border-gray-50 pt-8">
+                    <div className="text-[10px] text-gray-400 tracking-widest uppercase text-center md:text-left border-t border-gray-50 pt-8 font-sans">
                         © One.Company All Rights Reserved.
                     </div>
                 </div>
@@ -369,61 +365,104 @@
         // 1. Home Page
         const PageHome = ({ navigate }) => {
             return (
-                <div className="fade-in pt-32 md:pt-48">
+                <div className="page-transition pt-32 md:pt-48">
                     {/* Hero */}
                     <section className="px-6 md:px-12 min-h-[85vh] flex flex-col justify-between max-w-7xl mx-auto relative z-10">
                         
-                        {/* Symbolic "One" - Structural Rise Animation */}
                         <div className="absolute top-0 left-0 md:-left-20 w-full h-full flex items-start justify-start pointer-events-none select-none z-0 overflow-visible">
-                            <div className="text-[18rem] md:text-[30rem] lg:text-[40rem] font-serif-en font-bold text-[#000] leading-none one-symbol origin-top-left -mt-32 opacity-0">
+                            <div className="text-[20rem] md:text-[35rem] lg:text-[45rem] font-serif-en font-bold text-[#000] leading-none one-symbol origin-top-left -mt-32">
                                 One
                             </div>
                         </div>
 
                         <div className="max-w-6xl slide-up relative z-10">
-                            {/* Philosophy as the main face with weight and rhythm */}
-                            {/* Expanded max-width to allow the long 3rd line to fit in one line on desktops */}
-                            <h1 className="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-serif-jp font-bold leading-[1.5] tracking-wide text-[#111] mb-16 feature-font w-full">
-                                <span className="block animate-text-rise" style={{animationDelay: '0.2s'}}>自らが成長し続け、</span>
-                                <span className="block animate-text-rise" style={{animationDelay: '0.6s'}}>人間力のある人財を育み、</span>
-                                <span className="block animate-text-rise" style={{animationDelay: '1.0s'}}>経済活動を通してこの地球に貢献する。</span>
+                            {/* Philosophy */}
+                            <h1 className="h1-responsive font-serif-jp font-bold tracking-wide text-[#111] mb-16 w-full">
+                                <span className="block animate-rise" style={{animationDelay: '0.2s'}}>自らが成長し続け、</span>
+                                <span className="block animate-rise" style={{animationDelay: '0.6s'}}>人間力のある人財を育み、</span>
+                                <span className="block animate-rise" style={{animationDelay: '1.0s'}}>
+                                    <span className="inline-block whitespace-nowrap">経済活動を通してこの地球に貢献する。</span>
+                                </span>
                             </h1>
                             
-                            <div className="pl-6 border-l border-gray-200 animate-text-rise" style={{animationDelay: '1.4s'}}>
+                            <div className="pl-6 border-l border-gray-200 animate-rise" style={{animationDelay: '1.4s'}}>
                                 <h2 className="text-lg md:text-xl text-gray-600 mb-6 font-normal tracking-wide">
-                                    社会を豊かにする、新たな一歩を“ココ”から。
-                                </h2 >
-                                <p className="text-sm md:text-base text-gray-500 leading-loose max-w-2xl text-justify-inter-character">
-                                    Oneは、情報やノウハウを売る会社ではありません。<br class="hidden md:block"/>
-                                    商売の本質と金融知識を軸に、個人と企業が「自ら考え、決断し、行動できる力」を育てる。<br/>
-                                    私たちは、成果と継続に責任を持つ、伴走型のパートナーです。
+                                    <span className="inline-block">社会を豊かにする、</span>
+                                    <span className="inline-block">新たな一歩を“ココ”から。</span>
+                                </h2>
+                                <p className="text-sm md:text-base text-gray-500 leading-loose max-w-2xl">
+                                    <span className="inline-block">Oneは、情報やノウハウを売る会社ではありません。</span>
+                                    <span className="inline-block">商売の本質と金融知識を軸に、</span>
+                                    <span className="inline-block">個人と企業が「自ら考え、決断し、行動できる力」を育てる。</span><br class="hidden md:block"/>
+                                    <span className="inline-block">私たちは、成果と継続に責任を持つ、</span>
+                                    <span className="inline-block">伴走型のパートナーです。</span>
                                 </p>
                             </div>
                         </div>
 
                         <div className="py-20 slide-up relative z-10" style={{animationDelay: '1.6s'}}>
-                            <button 
-                                onClick={() => navigate('services')}
-                                className="group relative inline-flex items-center justify-center px-12 py-5 bg-[#111] text-white text-xs font-bold tracking-widest overflow-hidden transition-all hover:bg-[#333]"
-                            >
+                            <button onClick={() => navigate('services')} className="group relative inline-flex items-center justify-center px-12 py-5 bg-[#111] text-white text-xs font-bold tracking-widest overflow-hidden transition-all hover:bg-[#333]">
                                 <span className="relative z-10">事業内容を見る</span>
                             </button>
                         </div>
                     </section>
 
+                    {/* New Section: Message/Philosophy Deep Dive */}
+                    <section className="px-6 md:px-12 py-32 border-t border-gray-100 relative z-10 bg-white">
+                        <div className="max-w-4xl mx-auto">
+                            <SectionHeading en="Message" ja="Oneの想い" />
+                            <div className="space-y-12">
+                                <p className="text-base md:text-lg leading-[2.4] text-gray-700 font-serif-jp text-balance">
+                                    <span className="inline-block">経済は目的ではなく、未来を支えるための手段である。</span><br/>
+                                    <span className="inline-block">私たちは、一過性の利益や表面的なテクニックには関心がありません。</span>
+                                    <span className="inline-block">10年、20年と続く「揺るぎない構造」を設計することこそが、</span>
+                                    <span className="inline-block">真の経営資産になると確信しているからです。</span>
+                                </p>
+                                <p className="text-base md:text-lg leading-[2.4] text-gray-700 font-serif-jp text-balance">
+                                    <span className="inline-block">精神と経済、その両輪が自律してこそ、</span>
+                                    <span className="inline-block">個人も企業も、持続的に成長することができます。</span>
+                                    <span className="inline-block">Oneは、一人ひとりの「意志ある一歩」から始まる成長を支え、</span>
+                                    <span className="inline-block">責任ある経済活動が循環する社会を目指します。</span>
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* New Section: Approach */}
+                    <section className="px-6 md:px-12 py-32 bg-gray-50 border-t border-gray-100 relative z-10">
+                        <div className="max-w-7xl mx-auto">
+                            <SectionHeading en="Our Approach" ja="伴走の姿勢" />
+                            <div className="grid md:grid-cols-3 gap-12">
+                                <div className="bg-white p-10 border border-gray-100">
+                                    <h3 className="text-lg font-bold mb-4 font-serif-jp">01. 本質への回帰</h3>
+                                    <p className="text-sm leading-loose text-gray-600 text-balance">
+                                        流行りの手法に飛びつくのではなく、「なぜやるのか」「誰のためにやるのか」という商売の原理原則に立ち返り、土台から再構築します。
+                                    </p>
+                                </div>
+                                <div className="bg-white p-10 border border-gray-100">
+                                    <h3 className="text-lg font-bold mb-4 font-serif-jp">02. 泥臭い実践</h3>
+                                    <p className="text-sm leading-loose text-gray-600 text-balance">
+                                        綺麗な戦略を描くだけでは意味がありません。現場に入り込み、共に汗をかき、痛みを分かち合いながら、成果が出るまで徹底的にやり抜きます。
+                                    </p>
+                                </div>
+                                <div className="bg-white p-10 border border-gray-100">
+                                    <h3 className="text-lg font-bold mb-4 font-serif-jp">03. 自律の促進</h3>
+                                    <p className="text-sm leading-loose text-gray-600 text-balance">
+                                        私たちのゴールは、コンサルタントがいなくても回る組織を作ることです。依存させるのではなく、思考法とノウハウをすべて移管し、自走を促します。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* Facts */}
-                    <section className="px-6 md:px-12 py-32 bg-gray-50/50 border-t border-gray-100 relative z-10">
+                    <section className="px-6 md:px-12 py-32 bg-white border-t border-gray-100 relative z-10">
                         <div className="max-w-7xl mx-auto">
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-8">
-                                {[
-                                    { num: "1,500+", label: "講演・セミナー実績" },
-                                    { num: "10,000+", label: "累計相談者数" },
-                                    { num: "10 Years", label: "国内外企業支援" },
-                                    { num: "Many", label: "年商1億円超人材" }
-                                ].map((item, i) => (
-                                    <div key={i} className="flex flex-col">
-                                        <div className="text-4xl md:text-5xl font-serif-en font-light text-[#111] mb-3 whitespace-nowrap">{item.num}</div>
-                                        <div className="text-xs text-gray-500 font-bold tracking-widest">{item.label}</div>
+                                {[{ val: "1,500+", label: "講演実績" }, { val: "10,000+", label: "相談者数" }, { val: "10 Years", label: "支援実績" }, { val: "Many", label: "年商1億超人材" }].map((stat, i) => (
+                                    <div key={i} className="">
+                                        <div className="text-2xl md:text-3xl font-serif-en font-medium text-[#111] whitespace-nowrap">{stat.val}</div>
+                                        <div className="text-[10px] text-gray-500 font-bold tracking-wider uppercase">{stat.label}</div>
                                     </div>
                                 ))}
                             </div>
@@ -431,16 +470,13 @@
                     </section>
 
                     {/* Service Index (Simple List) */}
-                    <section className="px-6 md:px-12 py-32 border-t border-gray-100 relative z-10">
+                    <section className="px-6 md:px-12 py-32 border-t border-gray-100 relative z-10 bg-gray-50/30">
                         <div className="max-w-7xl mx-auto">
                             <SectionHeading en="Business Domain" ja="事業内容" />
                             <div className="grid md:grid-cols-2 gap-12 lg:gap-24">
                                 <div>
-                                    <p className="text-sm leading-loose text-gray-600 mb-12">
-                                        私たちのサービスは、単独で存在するのではなく、<br/>
-                                        企業の成長フェーズに合わせた「階層構造」を持っています。<br/>
-                                        学び、実践し、仕組みを設計し、そして拡張する。<br/>
-                                        一貫した思想のもと、最適なソリューションを提供します。
+                                    <p className="text-sm leading-loose text-gray-600 mb-12 text-balance">
+                                        私たちのサービスは、単独で存在するのではなく、企業の成長フェーズに合わせた「階層構造」を持っています。学び、実践し、仕組みを設計し、そして拡張する。一貫した思想のもと、最適なソリューションを提供します。
                                     </p>
                                     <button onClick={() => navigate('services')} className="text-xs font-bold border-b border-black pb-1 hover:opacity-60 transition-opacity">
                                         詳細な構造を見る →
@@ -462,7 +498,7 @@
                     <section id="contact" className="px-6 md:px-12 py-40 bg-[#111] text-white relative z-10">
                         <div className="max-w-4xl mx-auto text-center">
                             <h2 className="text-3xl md:text-4xl font-serif-en italic mb-8">Contact</h2>
-                            <p className="text-sm md:text-base text-gray-400 mb-16 leading-loose">
+                            <p className="text-sm md:text-base text-gray-400 mb-16 leading-loose text-balance">
                                 まずは、今抱えている課題や想いをお聞かせください。<br/>
                                 最適な一歩を、共に考えます。
                             </p>
@@ -477,14 +513,14 @@
             );
         };
 
-        // 2. Service List Page (Hierarchical)
+        // 2. Service List Page
         const PageServiceList = ({ navigate }) => {
             return (
-                <div className="fade-in pt-32 md:pt-40">
+                <div className="page-transition pt-32 md:pt-40">
                     <header className="px-6 md:px-12 mb-24 max-w-7xl mx-auto">
                         <span className="text-xs font-serif-en text-gray-400 tracking-widest mb-4 block italic">Structure of Growth</span>
-                        <h1 className="text-3xl md:text-4xl font-medium mb-8 text-[#111]">成長の階層構造</h1>
-                        <p className="text-sm text-gray-600 max-w-2xl leading-loose">
+                        <h1 className="text-3xl md:text-4xl font-serif-jp font-bold mb-8 text-[#111]">成長の階層構造</h1>
+                        <p className="text-sm text-gray-600 max-w-2xl leading-loose text-balance">
                             Oneの事業は、単なるサービスの羅列ではありません。<br/>
                             「学び」から始まり、「実践」を経て、「設計」し、「拡張」する。<br/>
                             人が自立し、経済活動を行うためのプロセスそのものです。
@@ -494,25 +530,27 @@
                     <div className="max-w-7xl mx-auto px-6 md:px-12 pb-32">
                         {SERVICES_HIERARCHY.map((group, i) => (
                             <section key={i} className="mb-24 last:mb-0 relative pl-8 md:pl-0 border-l border-gray-100 md:border-l-0">
-                                {/* Hierarchy Line for Mobile */}
                                 <div className="md:hidden absolute top-0 left-0 w-[1px] h-full bg-gray-100"></div>
-                                
                                 <div className="grid md:grid-cols-12 gap-8 md:gap-16">
                                     <div className="md:col-span-3">
                                         <div className="sticky top-32">
                                             <div className="text-xs font-serif-en text-gray-400 mb-2 italic">{group.sub}</div>
-                                            <h2 className="text-xl font-bold text-[#111]">{group.category}</h2>
+                                            <h2 className="text-xl font-bold text-[#111] font-serif-jp">{group.category}</h2>
+                                            <p className="text-xs text-gray-500 mt-4 leading-relaxed text-balance">{group.desc}</p>
                                         </div>
                                     </div>
-                                    <div className="md:col-span-9 space-y-12">
+                                    <div className="md:col-span-9 space-y-8">
                                         {group.items.map((service, j) => (
-                                            <div key={j} onClick={() => navigate('detail', service.id)} className="group cursor-pointer bg-white border border-transparent hover:border-gray-200 p-8 transition-all duration-500">
+                                            <div key={j} onClick={() => navigate('detail', service.id)} className="group cursor-pointer bg-white border border-gray-100 hover:border-gray-400 p-10 transition-all duration-500">
                                                 <div className="flex justify-between items-start mb-6">
-                                                    <h3 className="text-lg font-bold text-[#111]">{service.title}</h3>
+                                                    <h3 className="text-lg font-bold text-[#111] font-serif-jp">{service.title}</h3>
                                                     <span className="text-[10px] text-gray-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">View Details →</span>
                                                 </div>
-                                                <p className="text-sm text-gray-600 leading-loose mb-6" dangerouslySetInnerHTML={{ __html: service.lead }} />
-                                                <div className="w-8 h-[1px] bg-gray-200 group-hover:w-full group-hover:bg-black transition-all duration-700"></div>
+                                                <p className="text-sm text-gray-600 leading-loose mb-6 text-balance" dangerouslySetInnerHTML={{ __html: service.summary }} />
+                                                <div className="flex items-center pt-6 border-t border-gray-100">
+                                                    <span className="text-xs font-bold text-[#111] tracking-widest">PROVEN:</span>
+                                                    <span className="ml-3 text-xs text-gray-500 font-serif-en italic">{service.proof}</span>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -521,11 +559,10 @@
                         ))}
                     </div>
                     
-                    {/* Common CTA */}
                     <section id="contact" className="px-6 md:px-12 py-40 bg-[#111] text-white">
                         <div className="max-w-4xl mx-auto text-center">
                             <h2 className="text-3xl md:text-4xl font-serif-en italic mb-8">Contact</h2>
-                            <p className="text-sm md:text-base text-gray-400 mb-16 leading-loose">
+                            <p className="text-sm md:text-base text-gray-400 mb-16 leading-loose text-balance">
                                 どのフェーズからでも、ご相談いただけます。<br/>
                                 あなたの現状に合わせた最適なプランを提案します。
                             </p>
@@ -542,7 +579,6 @@
 
         // 3. Service Detail Page
         const PageServiceDetail = ({ id, navigate }) => {
-            // Find service data from hierarchy
             let data = null;
             SERVICES_HIERARCHY.forEach(group => {
                 const found = group.items.find(item => item.id === id);
@@ -552,23 +588,40 @@
             if (!data) return <div className="pt-40 text-center">Not Found</div>;
 
             return (
-                <div className="fade-in pt-32 md:pt-40 bg-white min-h-screen">
-                    <article className="max-w-4xl mx-auto px-6 md:px-12 pb-32">
-                        <div className="mb-16">
+                <div className="page-transition pt-32 md:pt-40 bg-white min-h-screen">
+                    <article className="max-w-5xl mx-auto px-6 md:px-12 pb-32">
+                        <div className="mb-20 border-b border-gray-200 pb-12">
                             <button onClick={() => navigate('services')} className="text-[10px] text-gray-400 tracking-widest hover:text-black transition-colors mb-8">← BACK TO LIST</button>
                             <div className="text-xs font-serif-en text-gray-400 italic mb-4">{data.enTitle}</div>
-                            <h1 className="text-3xl md:text-5xl font-medium text-[#111] mb-12">{data.title}</h1>
-                            <div className="text-lg md:text-xl font-normal leading-relaxed text-gray-800 p-8 border-l-2 border-gray-100 bg-gray-50">
-                                <div dangerouslySetInnerHTML={{ __html: data.lead }} />
+                            <h1 className="text-3xl md:text-5xl font-serif-jp font-bold text-[#111] mb-8">{data.title}</h1>
+                            <p className="text-lg text-gray-700 leading-relaxed font-medium text-balance" dangerouslySetInnerHTML={{ __html: data.summary }} />
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-12 lg:gap-20">
+                            <div className="space-y-16">
+                                <div>
+                                    <h3 className="text-xs font-bold tracking-widest text-[#111] mb-6 uppercase border-b border-black pb-2 inline-block">01 Why - なぜやるのか</h3>
+                                    <p className="text-sm leading-loose text-gray-600 text-balance">{data.details.why}</p>
+                                </div>
+                                <div>
+                                    <h3 className="text-xs font-bold tracking-widest text-[#111] mb-6 uppercase border-b border-black pb-2 inline-block">02 What - 提供価値</h3>
+                                    <p className="text-sm leading-loose text-gray-600 text-balance">{data.details.what}</p>
+                                </div>
+                            </div>
+                            <div className="space-y-16">
+                                <div>
+                                    <h3 className="text-xs font-bold tracking-widest text-[#111] mb-6 uppercase border-b border-black pb-2 inline-block">03 How - 進め方</h3>
+                                    <p className="text-sm leading-loose text-gray-600 text-balance">{data.details.how}</p>
+                                </div>
+                                <div>
+                                    <h3 className="text-xs font-bold tracking-widest text-[#111] mb-6 uppercase border-b border-black pb-2 inline-block">04 Who - 対象</h3>
+                                    <p className="text-sm leading-loose text-gray-600 whitespace-pre-wrap text-balance">{data.details.who}</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="space-y-8 text-sm md:text-base leading-[2.2] text-gray-600 mb-20">
-                            {data.desc.map((p, i) => <p key={i}>{p}</p>)}
-                        </div>
-
-                        <div className="border-t border-gray-100 pt-16 flex justify-center">
-                            <a href="#contact" className="py-4 px-16 bg-[#111] text-white text-xs font-bold tracking-widest hover:bg-gray-800 transition-colors">
+                        <div className="border-t border-gray-100 pt-20 mt-20 flex justify-center">
+                            <a href="#contact" className="py-5 px-20 bg-[#111] text-white text-xs font-bold tracking-widest hover:bg-gray-800 transition-colors">
                                 この事業について相談する
                             </a>
                         </div>
