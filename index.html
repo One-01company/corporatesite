@@ -103,7 +103,7 @@
             return (
                 <button onClick={() => navigate('home')} className="hover:opacity-60 transition-opacity flex items-center">
                     <img 
-                        src="1.png" 
+                        src="https://raw.githubusercontent.com/One-01company/corporatesite/main/1.png"
                         alt="One Logo" 
                         className="h-8 w-auto" 
                     />
@@ -229,10 +229,11 @@
                 const w = window.innerWidth;
                 const h = window.innerHeight;
                 const scene = new THREE.Scene();
-                scene.fog = new THREE.FogExp2(0xffffff, 0.0015);
+                // Fog to fade out distant points for depth
+                scene.fog = new THREE.FogExp2(0xffffff, 0.002);
                 
-                const camera = new THREE.PerspectiveCamera(45, w/h, 1, 1000);
-                camera.position.z = 80;
+                const camera = new THREE.PerspectiveCamera(75, w/h, 1, 1000);
+                camera.position.z = 100;
                 
                 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
                 renderer.setSize(w, h);
@@ -242,41 +243,118 @@
                 const group = new THREE.Group();
                 scene.add(group);
 
-                // --- Geometry: Architectural Structure ---
-                const geometry = new THREE.IcosahedronGeometry(20, 1);
-                const wireMat = new THREE.MeshBasicMaterial({ color: 0xcccccc, wireframe: true, transparent: true, opacity: 0.15 });
-                const innerGeo = new THREE.IcosahedronGeometry(12, 0);
-                const innerMat = new THREE.MeshBasicMaterial({ color: 0x999999, wireframe: true, transparent: true, opacity: 0.1 });
-                const mesh1 = new THREE.Mesh(geometry, wireMat);
-                const mesh2 = new THREE.Mesh(innerGeo, innerMat);
-                group.add(mesh1);
-                group.add(mesh2);
+                // --- Network Effect Configuration ---
+                const particleCount = 100; // Number of dots (Optimized)
+                const r = 120; // Spread radius
+                const rHalf = r / 2;
+                const connectionDist = 25; // Distance to connect dots
 
-                const ringGeo = new THREE.TorusGeometry(30, 0.05, 16, 100);
-                const ringMat = new THREE.MeshBasicMaterial({ color: 0xdddddd, transparent: true, opacity: 0.3 });
-                const ring1 = new THREE.Mesh(ringGeo, ringMat);
-                const ring2 = new THREE.Mesh(ringGeo, ringMat);
-                ring1.rotation.x = Math.PI / 2;
-                ring2.rotation.x = Math.PI / 3;
-                ring2.rotation.y = Math.PI / 6;
-                group.add(ring1);
-                group.add(ring2);
+                const particlesData = [];
+                const positions = new Float32Array(particleCount * 3);
+                // Pre-allocate line positions buffer (Max lines = count * count * 2 points * 3 coords)
+                // Realistically much fewer, but safe buffer size
+                const linePositions = new Float32Array(particleCount * particleCount * 3);
 
-                // Floating Particles
-                const particlesCount = 200;
-                const posArray = new Float32Array(particlesCount * 3);
-                for(let i=0; i<particlesCount * 3; i++) { posArray[i] = (Math.random() - 0.5) * 100; }
-                const particlesGeom = new THREE.BufferGeometry();
-                particlesGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-                const particlesMat = new THREE.PointsMaterial({ size: 0.15, color: 0xbbbbbb, transparent: true, opacity: 0.4 });
-                const particles = new THREE.Points(particlesGeom, particlesMat);
-                scene.add(particles);
+                // 1. Initialize Particles
+                const pMaterial = new THREE.PointsMaterial({
+                    color: 0x999999,
+                    size: 0.6,
+                    transparent: true,
+                    opacity: 0.6,
+                    sizeAttenuation: true
+                });
 
+                for (let i = 0; i < particleCount; i++) {
+                    const x = Math.random() * r - rHalf;
+                    const y = Math.random() * r - rHalf;
+                    const z = Math.random() * r - rHalf;
+
+                    positions[i * 3] = x;
+                    positions[i * 3 + 1] = y;
+                    positions[i * 3 + 2] = z;
+
+                    particlesData.push({
+                        velocity: new THREE.Vector3(
+                            -0.05 + Math.random() * 0.1,
+                            -0.05 + Math.random() * 0.1,
+                            -0.05 + Math.random() * 0.1
+                        ),
+                        numConnections: 0
+                    });
+                }
+
+                const particlesGeo = new THREE.BufferGeometry();
+                particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+                const particleSystem = new THREE.Points(particlesGeo, pMaterial);
+                group.add(particleSystem);
+
+                // 2. Initialize Lines
+                const linesGeo = new THREE.BufferGeometry();
+                linesGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3).setUsage(THREE.DynamicDrawUsage));
+                
+                const linesMat = new THREE.LineBasicMaterial({
+                    color: 0xcccccc,
+                    transparent: true,
+                    opacity: 0.25,
+                    linewidth: 1
+                });
+
+                const linesMesh = new THREE.LineSegments(linesGeo, linesMat);
+                group.add(linesMesh);
+
+                // --- Animation Loop ---
                 let animationId;
+                
                 const animate = () => {
-                    mesh1.rotation.y += 0.0005; mesh1.rotation.x += 0.0002;
-                    mesh2.rotation.y -= 0.0003; mesh2.rotation.z += 0.0002;
-                    ring1.rotation.z += 0.0002; ring2.rotation.z -= 0.0002;
+                    let vertexpos = 0;
+                    let numConnected = 0;
+
+                    // Update Particles
+                    for (let i = 0; i < particleCount; i++) {
+                        const p = particlesData[i];
+                        
+                        // Update position
+                        positions[i * 3]     += p.velocity.x;
+                        positions[i * 3 + 1] += p.velocity.y;
+                        positions[i * 3 + 2] += p.velocity.z;
+
+                        // Bounce off boundary
+                        if (positions[i * 3] < -rHalf || positions[i * 3] > rHalf) p.velocity.x = -p.velocity.x;
+                        if (positions[i * 3 + 1] < -rHalf || positions[i * 3 + 1] > rHalf) p.velocity.y = -p.velocity.y;
+                        if (positions[i * 3 + 2] < -rHalf || positions[i * 3 + 2] > rHalf) p.velocity.z = -p.velocity.z;
+
+                        // Check Connections
+                        // Loop from i+1 to avoid duplicate checks and self-check
+                        for (let j = i + 1; j < particleCount; j++) {
+                            const dx = positions[i * 3] - positions[j * 3];
+                            const dy = positions[i * 3 + 1] - positions[j * 3 + 1];
+                            const dz = positions[i * 3 + 2] - positions[j * 3 + 2];
+                            const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                            if (dist < connectionDist) {
+                                // Add line vertices
+                                linePositions[vertexpos++] = positions[i * 3];
+                                linePositions[vertexpos++] = positions[i * 3 + 1];
+                                linePositions[vertexpos++] = positions[i * 3 + 2];
+
+                                linePositions[vertexpos++] = positions[j * 3];
+                                linePositions[vertexpos++] = positions[j * 3 + 1];
+                                linePositions[vertexpos++] = positions[j * 3 + 2];
+
+                                numConnected++;
+                            }
+                        }
+                    }
+
+                    // Update Buffers
+                    linesMesh.geometry.setDrawRange(0, numConnected * 2);
+                    linesMesh.geometry.attributes.position.needsUpdate = true;
+                    particleSystem.geometry.attributes.position.needsUpdate = true;
+
+                    // Global Rotation (Slow spin)
+                    group.rotation.y += 0.0003;
+                    group.rotation.x += 0.0001;
+
                     renderer.render(scene, camera);
                     animationId = requestAnimationFrame(animate);
                 };
@@ -287,11 +365,9 @@
                     camera.updateProjectionMatrix();
                     renderer.setSize(window.innerWidth, window.innerHeight);
                     if (window.innerWidth < 768) {
-                        group.scale.set(0.6, 0.6, 0.6);
-                        group.position.y = -10;
+                        group.scale.set(0.7, 0.7, 0.7);
                     } else {
                         group.scale.set(1, 1, 1);
-                        group.position.y = 0;
                     }
                 };
                 window.addEventListener('resize', handleResize);
@@ -347,7 +423,7 @@
                         </div>
                     </div>
                     <div className="text-[10px] text-gray-400 tracking-widest uppercase text-center md:text-left border-t border-gray-50 pt-8 font-sans">
-                        © One.Company All Rights Reserved.
+                        © One Co.,Ltd. All Rights Reserved.
                     </div>
                 </div>
             </footer>
@@ -378,14 +454,14 @@
                         <div className="max-w-6xl slide-up relative z-10">
                             {/* Philosophy */}
                             <h1 className="h1-responsive font-serif-jp font-bold tracking-wide text-[#111] mb-16 w-full">
-                                <span className="block animate-rise" style={{animationDelay: '0.2s'}}>自らが成長し続け、</span>
-                                <span className="block animate-rise" style={{animationDelay: '0.6s'}}>人間力のある人財を育み、</span>
-                                <span className="block animate-rise" style={{animationDelay: '1.0s'}}>
+                                <span className="block animate-rise" style={{animationDelay: '1.5s'}}>自らが成長し続け、</span>
+                                <span className="block animate-rise" style={{animationDelay: '1.9s'}}>人間力のある人財を育み、</span>
+                                <span className="block animate-rise" style={{animationDelay: '2.3s'}}>
                                     <span className="inline-block whitespace-nowrap">経済活動を通してこの地球に貢献する。</span>
                                 </span>
                             </h1>
                             
-                            <div className="pl-6 border-l border-gray-200 animate-rise" style={{animationDelay: '1.4s'}}>
+                            <div className="pl-6 border-l border-gray-200 animate-rise" style={{animationDelay: '2.7s'}}>
                                 <h2 className="text-lg md:text-xl text-gray-600 mb-6 font-normal tracking-wide">
                                     <span className="inline-block">社会を豊かにする、</span>
                                     <span className="inline-block">新たな一歩を“ココ”から。</span>
@@ -400,7 +476,7 @@
                             </div>
                         </div>
 
-                        <div className="py-20 slide-up relative z-10" style={{animationDelay: '1.6s'}}>
+                        <div className="py-20 slide-up relative z-10" style={{animationDelay: '3.0s'}}>
                             <button onClick={() => navigate('services')} className="group relative inline-flex items-center justify-center px-12 py-5 bg-[#111] text-white text-xs font-bold tracking-widest overflow-hidden transition-all hover:bg-[#333]">
                                 <span className="relative z-10">事業内容を見る</span>
                             </button>
@@ -458,11 +534,11 @@
                     {/* Facts */}
                     <section className="px-6 md:px-12 py-32 bg-white border-t border-gray-100 relative z-10">
                         <div className="max-w-7xl mx-auto">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-8">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-16 md:gap-8">
                                 {[{ val: "1,500+", label: "講演実績" }, { val: "10,000+", label: "相談者数" }, { val: "10 Years", label: "支援実績" }, { val: "Many", label: "年商1億超人材" }].map((stat, i) => (
-                                    <div key={i} className="">
-                                        <div className="text-2xl md:text-3xl font-serif-en font-medium text-[#111] whitespace-nowrap">{stat.val}</div>
-                                        <div className="text-[10px] text-gray-500 font-bold tracking-wider uppercase">{stat.label}</div>
+                                    <div key={i} className="flex flex-col items-center justify-center text-center">
+                                        <div className="text-4xl md:text-5xl font-serif-en font-medium text-[#111] whitespace-nowrap mb-4">{stat.val}</div>
+                                        <div className="text-xs md:text-sm text-gray-500 font-bold tracking-widest uppercase">{stat.label}</div>
                                     </div>
                                 ))}
                             </div>
@@ -495,15 +571,15 @@
                     </section>
 
                     {/* Contact (Common CTA) */}
-                    <section id="contact" className="px-6 md:px-12 py-40 bg-[#111] text-white relative z-10">
+                    <section id="contact" className="px-6 md:px-12 py-24 bg-gray-50 border-t border-gray-100 relative z-10">
                         <div className="max-w-4xl mx-auto text-center">
-                            <h2 className="text-3xl md:text-4xl font-serif-en italic mb-8">Contact</h2>
-                            <p className="text-sm md:text-base text-gray-400 mb-16 leading-loose text-balance">
+                            <h2 className="text-2xl md:text-3xl font-serif-en italic mb-6 text-[#111]">Contact</h2>
+                            <p className="text-sm md:text-base text-gray-600 mb-10 leading-loose text-balance">
                                 まずは、今抱えている課題や想いをお聞かせください。<br/>
                                 最適な一歩を、共に考えます。
                             </p>
                             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                                <button className="py-4 px-12 border border-white/20 text-xs tracking-widest hover:bg-white hover:text-black transition-colors">
+                                <button className="py-4 px-16 bg-[#111] text-white text-xs font-bold tracking-widest hover:bg-gray-800 transition-colors shadow-lg">
                                     無料相談フォーム
                                 </button>
                             </div>
@@ -559,15 +635,15 @@
                         ))}
                     </div>
                     
-                    <section id="contact" className="px-6 md:px-12 py-40 bg-[#111] text-white">
+                    <section id="contact" className="px-6 md:px-12 py-24 bg-gray-50 border-t border-gray-100">
                         <div className="max-w-4xl mx-auto text-center">
-                            <h2 className="text-3xl md:text-4xl font-serif-en italic mb-8">Contact</h2>
-                            <p className="text-sm md:text-base text-gray-400 mb-16 leading-loose text-balance">
+                            <h2 className="text-2xl md:text-3xl font-serif-en italic mb-6 text-[#111]">Contact</h2>
+                            <p className="text-sm md:text-base text-gray-600 mb-10 leading-loose text-balance">
                                 どのフェーズからでも、ご相談いただけます。<br/>
                                 あなたの現状に合わせた最適なプランを提案します。
                             </p>
                             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                                <button className="py-4 px-12 bg-white text-black text-xs font-bold tracking-widest hover:bg-gray-200 transition-colors">
+                                <button className="py-4 px-16 bg-[#111] text-white text-xs font-bold tracking-widest hover:bg-gray-800 transition-colors shadow-lg">
                                     無料相談フォーム
                                 </button>
                             </div>
