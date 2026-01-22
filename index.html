@@ -87,7 +87,6 @@
         }
         
         /* Utility */
-        .text-balance { text-wrap: balance; }
         .border-theme { border-color: #E5E5E5; }
         .ib { display: inline-block; } /* Shorthand for inline-block */
     </style>
@@ -98,20 +97,20 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // --- Logo Component (Image File) ---
+        // --- Logo Component (Using Image File) ---
         const Logo = ({ navigate }) => {
             return (
                 <button onClick={() => navigate('home')} className="hover:opacity-60 transition-opacity flex items-center">
                     <img 
                         src="2.png" 
                         alt="One Logo" 
-                        className="h-20 w-auto" 
+                        className="h-24 w-auto object-contain" 
                     />
                 </button>
             );
         };
 
-        // --- Data: Service Contents (Hierarchical) ---
+        // --- Data: Service Contents ---
         const SERVICES_HIERARCHY = [
             {
                 category: "01 学び",
@@ -189,6 +188,7 @@
             {
                 category: "04 拡張",
                 sub: "Expansion",
+                desc: "物理的・精神的な境界を越え、可能性を広げる。",
                 items: [
                     {
                         id: "overseas",
@@ -233,7 +233,7 @@
                 const h = window.innerHeight;
                 const scene = new THREE.Scene();
                 // Fog to fade out distant points for depth
-                scene.fog = new THREE.FogExp2(0xffffff, 0.002);
+                scene.fog = new THREE.FogExp2(0xffffff, 0.0015);
                 
                 const camera = new THREE.PerspectiveCamera(75, w/h, 1, 1000);
                 camera.position.z = 100;
@@ -457,22 +457,15 @@
         };
 
         // --- Pages ---
-
-        // 1. Home Page
         const PageHome = ({ navigate }) => {
             return (
                 <div className="page-transition pt-32 md:pt-48">
                     {/* Hero */}
                     <section className="px-6 md:px-12 min-h-[85vh] flex flex-col justify-between max-w-7xl mx-auto relative z-10">
-                        
                         <div className="absolute top-0 left-0 md:-left-20 w-full h-full flex items-start justify-start pointer-events-none select-none z-0 overflow-visible">
-                            <div className="text-[20rem] md:text-[35rem] lg:text-[45rem] font-serif-en font-bold text-[#000] leading-none one-symbol origin-top-left -mt-32">
-                                One
-                            </div>
+                            <div className="text-[20rem] md:text-[35rem] lg:text-[45rem] font-serif-en font-bold text-[#000] leading-none one-symbol origin-top-left -mt-32">One</div>
                         </div>
-
                         <div className="max-w-6xl slide-up relative z-10">
-                            {/* Philosophy */}
                             <h1 className="h1-responsive font-serif-jp font-bold tracking-wide text-[#111] mb-16 w-full">
                                 <span className="block animate-rise" style={{animationDelay: '1.5s'}}>自らが成長し続け、</span>
                                 <span className="block animate-rise" style={{animationDelay: '1.9s'}}>人間力のある人財を育み、</span>
@@ -480,22 +473,15 @@
                                     <span className="ib">経済活動を通してこの地球に貢献する。</span>
                                 </span>
                             </h1>
-                            
                             <div className="pl-6 border-l border-gray-200 animate-rise" style={{animationDelay: '2.7s'}}>
                                 <h2 className="text-lg md:text-xl text-gray-600 mb-6 font-normal tracking-wide">
-                                    <span className="ib">社会を豊かにする、</span>
-                                    <span className="ib">新たな一歩を“ココ”から。</span>
+                                    <span className="ib">社会を豊かにする、</span><span className="ib">新たな一歩を“ココ”から。</span>
                                 </h2>
                                 <p className="text-sm md:text-base text-gray-500 leading-loose max-w-2xl">
-                                    <span className="ib">Oneは、</span><span className="ib">情報やノウハウを</span><span className="ib">売る会社ではありません。</span>
-                                    <span className="ib">商売の本質と</span><span className="ib">金融知識を軸に、</span>
-                                    <span className="ib">個人と企業が</span><span className="ib">「自ら考え、決断し、行動できる力」を</span><span className="ib">育てる。</span><br class="hidden md:block"/>
-                                    <span className="ib">私たちは、</span><span className="ib">成果と継続に</span><span className="ib">責任を持つ、</span>
-                                    <span className="ib">伴走型の</span><span className="ib">パートナーです。</span>
+                                    <span className="ib">Oneは、</span><span className="ib">情報やノウハウを</span><span className="ib">売る会社ではありません。</span><span className="ib">商売の本質と</span><span className="ib">金融知識を軸に、</span><span className="ib">個人と企業が</span><span className="ib">「自ら考え、決断し、行動できる力」を</span><span className="ib">育てる。</span><br class="hidden md:block"/><span className="ib">私たちは、</span><span className="ib">成果と継続に</span><span className="ib">責任を持つ、</span><span className="ib">伴走型の</span><span className="ib">パートナーです。</span>
                                 </p>
                             </div>
                         </div>
-
                         <div className="py-20 slide-up relative z-10" style={{animationDelay: '3.0s'}}>
                             <button onClick={() => navigate('services')} className="group relative inline-flex items-center justify-center px-12 py-5 bg-[#111] text-white text-xs font-bold tracking-widest overflow-hidden transition-all hover:bg-[#333]">
                                 <span className="relative z-10">事業内容を見る</span>
@@ -503,128 +489,109 @@
                         </div>
                     </section>
 
-                    {/* New Section: Message/Philosophy Deep Dive */}
+                    {/* Message */}
                     <section className="px-6 md:px-12 py-32 border-t border-gray-100 relative z-10 bg-white">
                         <div className="max-w-4xl mx-auto">
                             <SectionHeading en="Message" ja="Oneの想い" />
                             <div className="space-y-12">
-                                <p className="text-base md:text-lg leading-[2.4] text-gray-700 font-serif-jp text-balance">
-                                    <span className="ib">経済は目的ではなく、</span><span className="ib">未来を支えるための</span><span className="ib">手段である。</span><br/>
-                                    <span className="ib">私たちは、</span><span className="ib">一過性の利益や</span><span className="ib">表面的なテクニックには</span><span className="ib">関心がありません。</span>
-                                    <span className="ib">10年、20年と続く</span><span className="ib">「揺るぎない構造」を</span><span className="ib">設計することこそが、</span>
-                                    <span className="ib">真の経営資産になると</span><span className="ib">確信しているからです。</span>
-                                </p>
-                                <p className="text-base md:text-lg leading-[2.4] text-gray-700 font-serif-jp text-balance">
-                                    <span className="ib">精神と経済、</span><span className="ib">その両輪が</span><span className="ib">自律してこそ、</span>
-                                    <span className="ib">個人も企業も、</span><span className="ib">持続的に成長することができます。</span>
-                                    <span className="ib">Oneは、</span><span className="ib">一人ひとりの</span><span className="ib">「意志ある一歩」から</span><span className="ib">始まる成長を支え、</span>
-                                    <span className="ib">責任ある経済活動が</span><span className="ib">循環する社会を</span><span className="ib">目指します。</span>
-                                </p>
+                                <Reveal>
+                                    <p className="text-base md:text-lg leading-[2.4] text-gray-700 font-serif-jp text-balance">
+                                        <span className="ib">経済は目的ではなく、</span><span className="ib">未来を支えるための</span><span className="ib">手段である。</span><br/>
+                                        <span className="ib">私たちは、</span><span className="ib">一過性の利益や</span><span className="ib">表面的なテクニックには</span><span className="ib">関心がありません。</span><span className="ib">10年、20年と続く</span><span className="ib">「揺るぎない構造」を</span><span className="ib">設計することこそが、</span><span className="ib">真の経営資産になると</span><span className="ib">確信しているからです。</span>
+                                    </p>
+                                </Reveal>
+                                <Reveal>
+                                    <p className="text-base md:text-lg leading-[2.4] text-gray-700 font-serif-jp text-balance">
+                                        <span className="ib">精神と経済、</span><span className="ib">その両輪が</span><span className="ib">自律してこそ、</span><span className="ib">個人も企業も、</span><span className="ib">持続的に成長することが</span><span className="ib">できます。</span><span className="ib">Oneは、</span><span className="ib">一人ひとりの</span><span className="ib">「意志ある一歩」から</span><span className="ib">始まる成長を支え、</span><span className="ib">責任ある経済活動が</span><span className="ib">循環する社会を</span><span className="ib">目指します。</span>
+                                    </p>
+                                </Reveal>
                             </div>
                         </div>
                     </section>
 
-                    {/* New Section: Approach */}
-                    <section className="px-6 md:px-12 py-32 bg-gray-50 border-t border-gray-100 relative z-10">
+                    {/* Approach */}
+                    <section className="px-6 md:px-12 py-32 bg-white border-t border-gray-100 relative z-10">
                         <div className="max-w-7xl mx-auto">
                             <SectionHeading en="Our Approach" ja="伴走の姿勢" />
                             <div className="grid md:grid-cols-3 gap-12">
-                                <div className="bg-white p-10 border border-gray-100">
-                                    <h3 className="text-lg font-bold mb-4 font-serif-jp">01. 本質への回帰</h3>
-                                    <p className="text-sm leading-loose text-gray-600 text-balance">
-                                        流行りの手法に飛びつくのではなく、「なぜやるのか」「誰のためにやるのか」という商売の原理原則に立ち返り、土台から再構築します。
-                                    </p>
-                                </div>
-                                <div className="bg-white p-10 border border-gray-100">
-                                    <h3 className="text-lg font-bold mb-4 font-serif-jp">02. 泥臭い実践</h3>
-                                    <p className="text-sm leading-loose text-gray-600 text-balance">
-                                        綺麗な戦略を描くだけでは意味がありません。現場に入り込み、共に汗をかき、痛みを分かち合いながら、成果が出るまで徹底的にやり抜きます。
-                                    </p>
-                                </div>
-                                <div className="bg-white p-10 border border-gray-100">
-                                    <h3 className="text-lg font-bold mb-4 font-serif-jp">03. 自律の促進</h3>
-                                    <p className="text-sm leading-loose text-gray-600 text-balance">
-                                        私たちのゴールは、コンサルタントがいなくても回る組織を作ることです。依存させるのではなく、思考法とノウハウをすべて移管し、自走を促します。
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Facts */}
-                    <section className="px-6 md:px-12 py-32 bg-white border-t border-gray-100 relative z-10">
-                        <div className="max-w-7xl mx-auto">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-16 md:gap-8">
-                                {[{ val: "1,500+", label: "講演実績" }, { val: "10,000+", label: "相談者数" }, { val: "10 Years", label: "支援実績" }, { val: "Many", label: "年商1億超人材" }].map((stat, i) => (
-                                    <div key={i} className="flex flex-col items-center justify-center text-center">
-                                        <div className="text-4xl md:text-5xl font-serif-en font-medium text-[#111] whitespace-nowrap mb-4">{stat.val}</div>
-                                        <div className="text-xs md:text-sm text-gray-500 font-bold tracking-widest uppercase">{stat.label}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Service Index (Simple List) */}
-                    <section className="px-6 md:px-12 py-32 border-t border-gray-100 relative z-10 bg-gray-50/30">
-                        <div className="max-w-7xl mx-auto">
-                            <div className="flex flex-col md:flex-row justify-between items-end mb-16">
-                                <div>
-                                    <SectionHeading en="Business Domain" ja="事業内容" />
-                                    <p className="text-base text-gray-600 leading-loose max-w-2xl mt-[-2rem] text-balance">
-                                        <span className="ib">私たちのサービスは、</span><span className="ib">単独で存在するのではなく、</span><span className="ib">企業の成長フェーズに合わせた</span><span className="ib">「階層構造」を持っています。</span><span className="ib">一貫した思想のもと、</span><span className="ib">最適なソリューションを</span><span className="ib">提供します。</span>
-                                    </p>
-                                </div>
-                                <button onClick={() => navigate('services')} className="hidden md:block text-sm font-bold border-b border-black pb-1 hover:opacity-60 transition-opacity whitespace-nowrap mb-2">
-                                    詳細な構造を見る →
-                                </button>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {[
-                                    { title: "ビジネススクール", en: "Business School", id: "school" },
-                                    { title: "教育制度 (OLG)", en: "One LIFE Group", id: "olg" },
-                                    { title: "財務会計顧問", en: "Finance Advisory", id: "finance-advisory" },
-                                    { title: "ファイナンシャルプランニング", en: "Financial Planning", id: "fp" },
-                                    { title: "海外進出サポート", en: "Global Support", id: "overseas" },
-                                    { title: "コンサルティング・企業研修", en: "Consulting & Training", id: "consulting" }
-                                ].map((s, i) => (
-                                    <button 
-                                        key={i} 
-                                        onClick={() => navigate('detail', s.id)}
-                                        className="group flex items-center justify-between p-8 border border-gray-200 hover:bg-[#111] hover:border-[#111] transition-all duration-300 text-left bg-white"
-                                    >
-                                        <div>
-                                            <span className="block text-xs font-serif-en text-gray-400 mb-2 group-hover:text-gray-500 transition-colors">0{i+1}</span>
-                                            <h3 className="text-xl font-bold text-[#111] group-hover:text-white transition-colors font-serif-jp">{s.title}</h3>
-                                            <p className="text-xs text-gray-400 mt-1 group-hover:text-gray-500 transition-colors font-serif-en">{s.en}</p>
+                                    { t: "01. 本質への回帰", d: "流行りの手法に飛びつくのではなく、「なぜやるのか」「誰のためにやるのか」という商売の原理原則に立ち返り、土台から再構築します。" },
+                                    { t: "02. 泥臭い実践", d: "綺麗な戦略を描くだけでは意味がありません。現場に入り込み、共に汗をかき、痛みを分かち合いながら、成果が出るまで徹底的にやり抜きます。" },
+                                    { t: "03. 自律の促進", d: "私たちのゴールは、コンサルタントがいなくても回る組織を作ることです。依存させるのではなく、思考法とノウハウをすべて移管し、自走を促します。" }
+                                ].map((item, i) => (
+                                    <Reveal key={i} delay={i*200}>
+                                        <div className="bg-white p-10 border border-gray-100 h-full">
+                                            <h3 className="text-lg font-bold mb-4 font-serif-jp">{item.t}</h3>
+                                            <p className="text-sm leading-loose text-gray-600 text-balance">
+                                                {item.d}
+                                            </p>
                                         </div>
-                                        <span className="text-xl text-gray-300 group-hover:text-white transition-colors transform group-hover:translate-x-2 duration-300">→</span>
-                                    </button>
+                                    </Reveal>
                                 ))}
-                            </div>
-                            
-                            <div className="mt-12 md:hidden text-center">
-                                <button onClick={() => navigate('services')} className="text-sm font-bold border-b border-black pb-1 hover:opacity-60 transition-opacity">
-                                    詳細な構造を見る →
-                                </button>
                             </div>
                         </div>
                     </section>
 
-                    {/* Contact (Common CTA) */}
-                    <section id="contact" className="px-6 md:px-12 py-24 bg-gray-50 border-t border-gray-100 relative z-10">
-                        <div className="max-w-4xl mx-auto text-center">
-                            <h2 className="text-2xl md:text-3xl font-serif-en italic mb-6 text-[#111]">Contact</h2>
-                            <p className="text-sm md:text-base text-gray-600 mb-10 leading-loose text-balance">
-                                <span className="ib">まずは、</span><span className="ib">今抱えている課題や</span><span className="ib">想いをお聞かせください。</span><br/>
-                                <span className="ib">最適な一歩を、</span><span className="ib">共に考えます。</span>
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                                <button className="py-4 px-16 bg-[#111] text-white text-xs font-bold tracking-widest hover:bg-gray-800 transition-colors shadow-lg">
-                                    無料相談フォーム
-                                </button>
+                    {/* Facts (Dark Contrast) */}
+                    <section className="px-6 md:px-12 py-32 bg-[#111] text-white border-t border-gray-800 relative z-10">
+                        <div className="max-w-7xl mx-auto">
+                            <Reveal>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-16 md:gap-8">
+                                    {[{ val: "1,500+", label: "講演実績" }, { val: "10,000+", label: "相談者数" }, { val: "10 Years", label: "支援実績" }, { val: "Many", label: "年商1億超人材" }].map((stat, i) => (
+                                        <div key={i} className="flex flex-col items-center justify-center text-center">
+                                            <div className="text-4xl md:text-5xl font-serif-en font-medium text-white whitespace-nowrap mb-4">{stat.val}</div>
+                                            <div className="text-xs md:text-sm text-gray-400 font-bold tracking-widest uppercase">{stat.label}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Reveal>
+                        </div>
+                    </section>
+
+                    {/* Service Index */}
+                    <section className="px-6 md:px-12 py-32 border-t border-gray-100 relative z-10 bg-white">
+                        <div className="max-w-7xl mx-auto">
+                            <SectionHeading en="Business Domain" ja="事業内容" />
+                            <div className="grid md:grid-cols-2 gap-12 lg:gap-24">
+                                <Reveal>
+                                    <div>
+                                        <p className="text-base leading-loose text-gray-600 mb-12 text-balance">
+                                            <span className="ib">私たちのサービスは、</span><span className="ib">単独で存在するのではなく、</span><span className="ib">企業の成長フェーズに合わせた</span><span className="ib">「階層構造」を持っています。</span><span className="ib">学び、実践し、</span><span className="ib">仕組みを設計し、</span><span className="ib">そして拡張する。</span><span className="ib">一貫した思想のもと、</span><span className="ib">最適なソリューションを</span><span className="ib">提供します。</span>
+                                        </p>
+                                        <button onClick={() => navigate('services')} className="text-sm font-bold border-b border-black pb-1 hover:opacity-60 transition-opacity">
+                                            詳細な構造を見る →
+                                        </button>
+                                    </div>
+                                </Reveal>
+                                <div className="space-y-2">
+                                    {["ビジネススクール", "教育制度 (OLG)", "財務会計顧問・FP", "海外進出・企業研修"].map((s, i) => (
+                                        <Reveal key={i} delay={i*100}>
+                                            <div className="flex items-center py-6 border-b border-gray-200 text-lg md:text-xl font-medium text-[#111] tracking-wide hover:pl-4 transition-all duration-300 cursor-default">
+                                                <span className="text-sm text-gray-400 w-16 font-serif-en">0{i+1}</span>
+                                                {s}
+                                            </div>
+                                        </Reveal>
+                                    ))}
+                                </div>
                             </div>
+                        </div>
+                    </section>
+
+                    {/* Contact */}
+                    <section id="contact" className="px-6 md:px-12 py-32 bg-white border-t border-gray-100 relative z-10">
+                        <div className="max-w-4xl mx-auto text-center">
+                            <Reveal>
+                                <h2 className="text-3xl md:text-4xl font-serif-en italic mb-8 text-[#111]">Contact</h2>
+                                <p className="text-base text-gray-600 mb-12 leading-loose text-balance">
+                                    <span className="ib">まずは、</span><span className="ib">今抱えている課題や</span><span className="ib">想いをお聞かせください。</span><br/>
+                                    <span className="ib">最適な一歩を、</span><span className="ib">共に考えます。</span>
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                                    <button className="py-4 px-16 bg-[#111] text-white text-xs font-bold tracking-widest hover:bg-gray-800 transition-colors shadow-lg">
+                                        無料相談フォーム
+                                    </button>
+                                </div>
+                            </Reveal>
                         </div>
                     </section>
                 </div>
@@ -653,8 +620,8 @@
                                     <div className="md:col-span-3">
                                         <div className="sticky top-32">
                                             <div className="text-xs font-serif-en text-gray-400 mb-2 italic">{group.sub}</div>
-                                            <h2 className="text-xl font-bold text-[#111] font-serif-jp">{group.category}</h2>
-                                            <p className="text-xs text-gray-500 mt-4 leading-relaxed text-balance">{group.desc}</p>
+                                            <h2 className="text-2xl font-bold text-[#111] font-serif-jp mb-2">{group.category}</h2>
+                                            <p className="text-sm text-gray-500 mt-2 leading-relaxed text-balance">{group.desc}</p>
                                         </div>
                                     </div>
                                     <div className="md:col-span-9 space-y-8">
@@ -752,24 +719,16 @@
         const App = () => {
             const [page, setPage] = useState('home');
             const [detailId, setDetailId] = useState(null);
-
-            const navigate = (target, id = null) => {
-                setPage(target);
-                if (id) setDetailId(id);
-                window.scrollTo(0, 0);
-            };
-
+            const navigate = (target, id = null) => { setPage(target); if (id) setDetailId(id); window.scrollTo(0, 0); };
             return (
                 <div>
                     <ThreeBackground />
                     <Navigation navigate={navigate} />
-                    
                     <main>
                         {page === 'home' && <PageHome navigate={navigate} />}
                         {page === 'services' && <PageServiceList navigate={navigate} />}
                         {page === 'detail' && <PageServiceDetail id={detailId} navigate={navigate} />}
                     </main>
-                    
                     {page === 'home' && <Footer navigate={navigate} />}
                 </div>
             );
