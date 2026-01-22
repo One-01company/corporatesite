@@ -3,49 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>One | Brand Asset Site</title>
+    <title>株式会社One | 理念と構造</title>
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Babel (for JSX) -->
+    <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     
-    <!-- Google Fonts: Noto Sans JP -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-
+    <!-- Fonts -->
+    <!-- Added Noto Serif JP for weight and elegance -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            background-color: #ffffff;
-            color: #111111;
+        /* Base Settings */
+        :root {
+            --color-text-main: #111111;
+            --color-text-sub: #555555;
+            --color-bg: #FFFFFF;
+            --color-line: #E5E5E5;
         }
-        @keyframes slideDown {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(200%); }
+        
+        body { 
+            font-family: 'Noto Sans JP', sans-serif; 
+            background-color: var(--color-bg); 
+            color: var(--color-text-main); 
+            overflow-x: hidden; 
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: 0.04em;
         }
-        .animate-slideDown {
-          animation: slideDown 2s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+        
+        .font-serif-en { font-family: 'Cormorant Garamond', serif; }
+        .font-serif-jp { font-family: 'Noto Serif JP', serif; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fff; }
+        ::-webkit-scrollbar-thumb { background: #ddd; }
+        
+        /* Three.js Layer */
+        #canvas-container { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            z-index: -1; pointer-events: none; opacity: 0; 
+            transition: opacity 2s ease-out;
         }
-        /* Custom scrollbar for webkit */
-        ::-webkit-scrollbar {
-            width: 8px;
+        #canvas-container.loaded { opacity: 1; }
+        
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
         }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+        
+        /* Text Blur-Rise Animation */
+        @keyframes textBlurRise {
+            0% {
+                opacity: 0;
+                transform: translateY(15px);
+                filter: blur(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
         }
-        ::-webkit-scrollbar-thumb {
-            background: #888;
+
+        .animate-text-rise {
+            opacity: 0; /* Initial state */
+            animation: textBlurRise 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
+        
+        /* One Symbol Structural Rise Animation */
+        @keyframes structuralRise {
+            0% {
+                opacity: 0;
+                transform: translateY(60px) scale(0.98);
+                letter-spacing: 0.15em;
+                filter: blur(12px);
+            }
+            100% {
+                opacity: 0.06;
+                transform: translateY(0) scale(1);
+                letter-spacing: 0.02em;
+                filter: blur(0);
+            }
         }
+        
+        .one-symbol {
+            animation: structuralRise 3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            will-change: transform, opacity, letter-spacing, filter;
+        }
+        
+        .fade-in { animation: fadeIn 1.2s ease-out forwards; }
+        .slide-up { animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        
+        /* Typography Helpers */
+        .text-balance { text-wrap: balance; }
+        .tracking-widest-plus { letter-spacing: 0.2em; }
+        
+        /* Utilities */
+        .border-b-thin { border-bottom: 1px solid var(--color-line); }
     </style>
 </head>
 <body>
@@ -54,643 +121,485 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // --- Icon Components (Replacing lucide-react for single file usage) ---
-        const IconWrapper = ({ children, className, ...props }) => (
-            <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="24" 
-                height="24" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                className={className} 
-                {...props}
-            >
-                {children}
-            </svg>
-        );
-
-        const ArrowRight = (props) => <IconWrapper {...props}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></IconWrapper>;
-        const BarChart3 = (props) => <IconWrapper {...props}><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></IconWrapper>;
-        const GraduationCap = (props) => <IconWrapper {...props}><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></IconWrapper>;
-        const Globe = (props) => <IconWrapper {...props}><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></IconWrapper>;
-        const Users = (props) => <IconWrapper {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></IconWrapper>;
-        const Briefcase = (props) => <IconWrapper {...props}><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></IconWrapper>;
-        const MessageSquare = (props) => <IconWrapper {...props}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></IconWrapper>;
-        const ArrowUpRight = (props) => <IconWrapper {...props}><path d="M7 7h10v10"/><path d="M7 17 17 7"/></IconWrapper>;
-        const ChevronDown = (props) => <IconWrapper {...props}><path d="m6 9 6 6 6-6"/></IconWrapper>;
-
-        // --- Custom Hooks ---
-
-        // Scroll Reveal Animation Hook
-        const useReveal = () => {
-            const [isVisible, setIsVisible] = useState(false);
-            const ref = useRef(null);
-
-            useEffect(() => {
-                const observer = new IntersectionObserver(
-                ([entry]) => {
-                    if (entry.isIntersecting) {
-                    setIsVisible(true);
-                    observer.unobserve(entry.target);
+        // --- Data: Service Contents (Hierarchical) ---
+        const SERVICES_HIERARCHY = [
+            {
+                category: "01 学び",
+                sub: "Foundation",
+                items: [
+                    {
+                        id: "school",
+                        title: "ビジネススクール",
+                        enTitle: "Business School",
+                        lead: "ノウハウのその先へ。<br>自ら考え、選択し、生き抜く「人生力」を。",
+                        desc: [
+                            "営業・経営・財務・税務・ファイナンス。これらを10年以上にわたり学び続け、実践してきたメンバーによって提供される、Oneオリジナルのビジネススクールです。",
+                            "私たちの目的は、単なるビジネススキルやノウハウの伝授ではありません。変化の激しい時代において、物事の本質を捉え、自ら考え、決断し、生き抜く力――すなわち「人生力」を身につけることにあります。"
+                        ]
                     }
-                },
-                { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
-                );
-
-                if (ref.current) {
-                observer.observe(ref.current);
-                }
-
-                return () => {
-                if (ref.current) observer.unobserve(ref.current);
-                };
-            }, []);
-
-            return [ref, isVisible];
-        };
-
-        // Count Up Animation Hook for Numbers
-        const useCountUp = (end, duration = 2000, start = 0) => {
-            const [count, setCount] = useState(start);
-            const [ref, isVisible] = useReveal();
-
-            useEffect(() => {
-                if (!isVisible) return;
-
-                let startTime = null;
-                const endNum = parseInt(String(end).replace(/,/g, ''), 10);
-                
-                const animate = (currentTime) => {
-                if (!startTime) startTime = currentTime;
-                const progress = Math.min((currentTime - startTime) / duration, 1);
-                
-                const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-                
-                setCount(Math.floor(easeProgress * (endNum - start) + start));
-
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
-                } else {
-                    setCount(endNum);
-                }
-                };
-
-                requestAnimationFrame(animate);
-            }, [isVisible, end, duration, start]);
-
-            return [ref, count.toLocaleString()];
-        };
-
-        // --- Components ---
-
-        // Reveal Component
-        const Reveal = ({ children, className = "", delay = 0 }) => {
-            const [ref, isVisible] = useReveal();
-            
-            return (
-                <div
-                ref={ref}
-                className={`transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] transform ${className} ${
-                    isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-                }`}
-                style={{ transitionDelay: `${delay}ms` }}
-                >
-                {children}
-                </div>
-            );
-        };
-
-        // 3D Network Globe Component (Hero Section Background)
-        const NetworkGlobeBackground = () => {
-            const canvasRef = useRef(null);
-
-            useEffect(() => {
-                const canvas = canvasRef.current;
-                const ctx = canvas.getContext('2d');
-                let animationFrameId;
-                
-                let w = canvas.width = window.innerWidth;
-                let h = canvas.height = window.innerHeight;
-
-                const globeRadius = window.innerWidth < 768 ? 160 : 280;
-                const dotCount = 500; 
-                const connectionDistance = 45; 
-                
-                const dots = [];
-                const edges = [];
-                
-                let rotation = 0;
-                let rotationX = 0;
-                const rotationSpeed = 0.001;
-                
-                const mouse = { x: w * 0.75, y: h / 2 };
-                const targetRotation = { x: 0, y: 0 };
-
-                const handleResize = () => {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-                };
-
-                window.addEventListener('resize', handleResize);
-                window.addEventListener('mousemove', (e) => {
-                mouse.x = e.clientX;
-                mouse.y = e.clientY;
-                });
-
-                for (let i = 0; i < dotCount; i++) {
-                const phi = Math.acos(-1 + (2 * i) / dotCount);
-                const theta = Math.sqrt(dotCount * Math.PI) * phi;
-
-                dots.push({
-                    x: globeRadius * Math.cos(theta) * Math.sin(phi),
-                    y: globeRadius * Math.sin(theta) * Math.sin(phi),
-                    z: globeRadius * Math.cos(phi),
-                    baseSize: Math.random() * 1.5 + 0.5,
-                });
-                }
-
-                for (let i = 0; i < dotCount; i++) {
-                for (let j = i + 1; j < dotCount; j++) {
-                    const d1 = dots[i];
-                    const d2 = dots[j];
-                    const dist = Math.sqrt((d1.x - d2.x)**2 + (d1.y - d2.y)**2 + (d1.z - d2.z)**2);
-                    if (dist < connectionDistance) {
-                    edges.push({ p1: i, p2: j });
+                ]
+            },
+            {
+                category: "02 実践",
+                sub: "Practice",
+                items: [
+                    {
+                        id: "olg",
+                        title: "教育制度 (OLG)",
+                        enTitle: "One LIFE Group",
+                        lead: "One LIFE Group.<br>学び、実践し、自立するための独自システム。",
+                        desc: [
+                            "OLGは、営業スキルと人生力をゼロから学び、実践し、収入を得ていくためのOne独自の教育プログラムおよびシステムです。",
+                            "座学だけの教育には限界があります。段階に応じた学びと実践を繰り返す構成により、知識だけで終わらせず、自立し、継続的に成長できる状態をつくります。"
+                        ]
                     }
-                }
-                }
+                ]
+            },
+            {
+                category: "03 設計",
+                sub: "Architecture",
+                items: [
+                    {
+                        id: "finance-advisory",
+                        title: "財務会計顧問サービス",
+                        enTitle: "Finance Advisory",
+                        lead: "数字を「管理する」だけでなく、<br>未来をつくるために「活かす」財務会計へ。",
+                        desc: [
+                            "法律・会計・税務の各分野に精通した専門家が在籍。単なる記帳代行にとどまらず、国内外の企業支援の知見を活かし、経営者の意思決定を支える「攻めの財務」を提供します。",
+                            "キャッシュフローの構築から資金調達、投資判断まで。企業の成長フェーズに合わせた最適な財務戦略を立案し、実務レベルで伴走します。"
+                        ]
+                    },
+                    {
+                        id: "fp",
+                        title: "ファイナンシャルプランニング",
+                        enTitle: "Financial Planning",
+                        lead: "1,500回以上の講演実績。<br>人生と事業に寄り添う、確かな資金設計。",
+                        desc: [
+                            "全国の企業・自治体からの依頼により、1,500回以上の講演・セミナーを実施。延べ1万人以上の相談実績をもとに、教科書的ではない「生きた知恵」を提供します。",
+                            "単なる商品提案ではありません。クライアントが守りたい価値観を共有し、それを育てるための経済的基盤を共に設計します。"
+                        ]
+                    }
+                ]
+            },
+            {
+                category: "04 拡張",
+                sub: "Expansion",
+                items: [
+                    {
+                        id: "overseas",
+                        title: "海外進出サポート",
+                        enTitle: "Global Support",
+                        lead: "国境を越える。<br>リアルな経験と人脈が、事業の可能性を広げる。",
+                        desc: [
+                            "年の半分以上を海外で生活し、事業を行うメンバーが在籍。机上の空論ではない、現地のリアルな経験に基づいたサポートを提供します。",
+                            "法人設立から生活基盤のセットアップまで。培ってきた知識と独自のグローバル人脈を活かし、海外展開を視野に入れた事業構築を支援します。"
+                        ]
+                    },
+                    {
+                        id: "consulting",
+                        title: "コンサルティング・企業研修",
+                        enTitle: "Consulting & Training",
+                        lead: "Business Consulting.<br>結果にフォーカスし、最後まで伴走する。",
+                        desc: [
+                            "商売の本質と高度な金融知識を融合した、実践型支援を行います。私たちのコンサルティングは、綺麗なレポートを提出して終わりではありません。",
+                            "課題抽出から施策実行、成果創出まで。クライアントチームの一員として深く入り込み、結果が出るまで徹底的に伴走します。"
+                        ]
+                    }
+                ]
+            }
+        ];
 
+        // Flattened data for detail lookup
+        const ALL_SERVICES = SERVICES_HIERARCHY.flatMap(group => group.items.reduce((acc, item) => ({...acc, [item.id]: item}), {}));
+
+        // --- Three.js Background (Abstract Architecture) ---
+        const ThreeBackground = () => {
+            const mountRef = useRef(null);
+            useEffect(() => {
+                if (!mountRef.current) return;
+                
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                const scene = new THREE.Scene();
+                scene.fog = new THREE.FogExp2(0xffffff, 0.0015);
+                
+                const camera = new THREE.PerspectiveCamera(45, w/h, 1, 1000);
+                camera.position.z = 60;
+                
+                const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                renderer.setSize(w, h);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                mountRef.current.appendChild(renderer.domElement);
+
+                // --- Geometry: Abstract Structure ---
+                const group = new THREE.Group();
+                scene.add(group);
+
+                // 1. Central Core (Icosahedron)
+                const coreGeo = new THREE.IcosahedronGeometry(15, 1);
+                const coreMat = new THREE.MeshBasicMaterial({ 
+                    color: 0xe5e5e5, 
+                    wireframe: true, 
+                    transparent: true, 
+                    opacity: 0.15 
+                });
+                const core = new THREE.Mesh(coreGeo, coreMat);
+                group.add(core);
+
+                // 2. Outer Rings (Torus)
+                const ringGeo = new THREE.TorusGeometry(22, 0.05, 16, 100);
+                const ringMat = new THREE.MeshBasicMaterial({ color: 0xcccccc, transparent: true, opacity: 0.2 });
+                const ring1 = new THREE.Mesh(ringGeo, ringMat);
+                const ring2 = new THREE.Mesh(ringGeo, ringMat);
+                ring1.rotation.x = Math.PI / 2;
+                ring2.rotation.x = Math.PI / 3;
+                ring2.rotation.y = Math.PI / 6;
+                group.add(ring1);
+                group.add(ring2);
+
+                // 3. Floating Nodes (Points)
+                const particlesCount = 200;
+                const posArray = new Float32Array(particlesCount * 3);
+                for(let i=0; i<particlesCount * 3; i++) {
+                    posArray[i] = (Math.random() - 0.5) * 100;
+                }
+                const particlesGeom = new THREE.BufferGeometry();
+                particlesGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+                const particlesMat = new THREE.PointsMaterial({ 
+                    size: 0.15, color: 0xbbbbbb, transparent: true, opacity: 0.4 
+                });
+                const particles = new THREE.Points(particlesGeom, particlesMat);
+                scene.add(particles);
+
+                // --- Animation ---
+                let animationId;
                 const animate = () => {
-                ctx.clearRect(0, 0, w, h);
-                
-                targetRotation.x = (mouse.y - h / 2) * 0.0002;
-                targetRotation.y = (mouse.x - w / 2) * 0.0002;
-
-                rotation += rotationSpeed;
-                rotationX += (targetRotation.x - rotationX) * 0.05;
-
-                const cx = window.innerWidth < 768 ? w / 2 : w * 0.7;
-                const cy = window.innerWidth < 768 ? h * 0.6 : h / 2;
-
-                const projectedDots = dots.map(dot => {
-                    let x = dot.x * Math.cos(rotation) - dot.z * Math.sin(rotation);
-                    let z = dot.x * Math.sin(rotation) + dot.z * Math.cos(rotation);
-                    let y = dot.y;
-
-                    const yNew = y * Math.cos(rotationX) - z * Math.sin(rotationX);
-                    const zNew = y * Math.sin(rotationX) + z * Math.cos(rotationX);
-                    y = yNew;
-                    z = zNew;
-
-                    const scale = 450 / (450 + z); 
-                    const x2d = cx + x * scale;
-                    const y2d = cy + y * scale;
-
-                    return { 
-                    x: x2d, y: y2d, z: z, scale: scale, 
-                    baseSize: dot.baseSize,
-                    visible: z > -globeRadius * 0.5 
-                    };
-                });
-
-                ctx.lineWidth = 0.5;
-                edges.forEach(edge => {
-                    const p1 = projectedDots[edge.p1];
-                    const p2 = projectedDots[edge.p2];
-
-                    if (p1.visible && p2.visible) {
-                        const depth = Math.min(p1.z, p2.z);
-                        const alpha = ((depth + globeRadius) / (2 * globeRadius)) * 0.15;
-
-                        if (alpha > 0) {
-                            ctx.strokeStyle = `rgba(20, 20, 20, ${alpha})`;
-                            ctx.beginPath();
-                            ctx.moveTo(p1.x, p1.y);
-                            ctx.lineTo(p2.x, p2.y);
-                            ctx.stroke();
-                        }
-                    }
-                });
-
-                projectedDots.forEach(dot => {
-                    if (dot.visible) {
-                        const alpha = ((dot.z + globeRadius) / (2 * globeRadius)) * 0.6;
-                        if (alpha > 0) {
-                            ctx.fillStyle = `rgba(26, 26, 26, ${alpha})`;
-                            ctx.beginPath();
-                            ctx.arc(dot.x, dot.y, dot.baseSize * dot.scale, 0, Math.PI * 2);
-                            ctx.fill();
-                        }
-                    }
-                });
-
-                animationFrameId = requestAnimationFrame(animate);
+                    group.rotation.y += 0.0005;
+                    group.rotation.x += 0.0002;
+                    particles.rotation.y -= 0.0002;
+                    
+                    renderer.render(scene, camera);
+                    animationId = requestAnimationFrame(animate);
                 };
-
                 animate();
 
-                return () => {
-                window.removeEventListener('resize', handleResize);
-                cancelAnimationFrame(animationFrameId);
-                };
-            }, []);
-
-            return <canvas ref={canvasRef} className="absolute inset-0 z-0 opacity-100 pointer-events-none" />;
-        };
-
-        // CountUp Number Component
-        const AnimatedNumber = ({ value, suffix = "", sub }) => {
-            const [ref, count] = useCountUp(value);
-            
-            return (
-                <div ref={ref} className="flex flex-col group cursor-default hover:bg-black/5 p-4 transition-colors -ml-4 rounded-lg">
-                <div className="text-[10px] font-bold tracking-[0.2em] text-[#555] mb-2 uppercase flex items-center gap-2">
-                    {sub}
-                </div>
-                <div className="text-3xl md:text-5xl font-black text-[#111] leading-none mb-2 tracking-tighter flex items-baseline">
-                    {count}
-                    <span className="text-base md:text-xl font-bold ml-1 text-[#555]">{suffix}</span>
-                </div>
-                </div>
-            );
-        };
-
-        // Main App Component
-        const App = () => {
-            const [scrolled, setScrolled] = useState(false);
-
-            useEffect(() => {
-                const handleScroll = () => {
-                setScrolled(window.scrollY > 50);
-                };
-                window.addEventListener('scroll', handleScroll);
-                return () => window.removeEventListener('scroll', handleScroll);
-            }, []);
-
-            // Sections
-            const Hero = () => (
-                <section className="relative min-h-screen flex flex-col justify-center px-6 md:px-12 pt-20 pb-24 bg-white overflow-hidden">
-                <NetworkGlobeBackground />
-                
-                <div className="absolute inset-0 bg-gradient-to-r from-white via-white/40 to-transparent z-0 pointer-events-none"></div>
-
-                <div className="max-w-[95rem] mx-auto w-full relative z-10 pointer-events-none">
-                    
-                    <div className="mb-20 md:mb-32">
-                    <Reveal>
-                        <div className="flex items-baseline space-x-4 mb-8 opacity-60">
-                        <div className="h-[2px] w-12 bg-black"></div>
-                        <span className="text-xs font-bold tracking-[0.4em] uppercase text-black">Concept</span>
-                        </div>
-                    </Reveal>
-                    
-                    <Reveal delay={200}>
-                        <h1 className="text-[#111] leading-none pointer-events-auto">
-                        <span className="block text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 md:mb-8 text-gray-800">
-                            社会を豊かにする、
-                        </span>
-                        <span className="block text-[13vw] md:text-[8rem] lg:text-[9rem] font-black tracking-tighter leading-[0.85] mix-blend-multiply mb-2 md:mb-6">
-                            新たな一歩を
-                        </span>
-                        <div className="flex items-baseline flex-wrap">
-                            <span className="relative inline-block text-[13vw] md:text-[8rem] lg:text-[9rem] font-black tracking-tighter mr-4 md:mr-8 text-black z-10">
-                                “ココ”
-                                <span className="absolute bottom-4 left-0 w-full h-[0.1em] bg-gray-300 -z-10 transform -rotate-1 origin-left"></span>
-                            </span>
-                            <span className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-gray-700">から。</span>
-                        </div>
-                        </h1>
-                    </Reveal>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-end pointer-events-auto">
-                    <div className="md:col-span-6">
-                        <Reveal delay={400}>
-                        <p className="text-xl md:text-2xl font-bold text-[#111] leading-relaxed tracking-tight backdrop-blur-sm">
-                            自らが成長し続け、人間力ある人財を育み、<br />
-                            経済活動を通して、社会と地球に貢献する。
-                        </p>
-                        </Reveal>
-                    </div>
-                    <div className="md:col-span-6 flex flex-col justify-end">
-                        <Reveal delay={600}>
-                        <div className="flex flex-col gap-6 border-l-2 border-black pl-8 ml-2 bg-white/60 backdrop-blur-md py-6 pr-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-                            <div className="text-base text-[#333] leading-relaxed font-medium">
-                                Oneは、商売の本質と金融知識を軸に、個人と企業が「自ら考え、決断し、行動できる力」を育てます。
-                            </div>
-                            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-black/60">
-                                <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
-                                Partner for Growth
-                            </div>
-                        </div>
-                        </Reveal>
-                    </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 mt-24 pt-12 border-t border-black pointer-events-auto">
-                    <AnimatedNumber value="1500" suffix="+" sub="講演・セミナー実績" />
-                    <AnimatedNumber value="10000" suffix="+" sub="累計相談者数" />
-                    <AnimatedNumber value="10" suffix="Years" sub="国内外企業支援" />
-                    
-                    <Reveal delay={300}>
-                        <div className="flex flex-col group cursor-default hover:bg-black/5 p-4 transition-colors -ml-4 rounded-lg">
-                        <div className="text-[10px] font-bold tracking-[0.2em] text-[#555] mb-2 uppercase flex items-center gap-2">
-                            年商1億円超人材
-                        </div>
-                        <div className="text-3xl md:text-5xl font-black text-[#111] leading-none mb-2 tracking-tighter flex items-baseline">
-                            Many
-                        </div>
-                        </div>
-                    </Reveal>
-                    </div>
-                </div>
-                
-                <div className="absolute bottom-8 left-12 z-20 hidden md:flex items-center gap-4">
-                    <span className="text-[10px] font-bold tracking-[0.3em] uppercase writing-vertical-lr text-black">Scroll</span>
-                    <div className="h-16 w-[1px] bg-black overflow-hidden relative">
-                    <div className="absolute top-0 left-0 w-full h-1/2 bg-gray-400 animate-slideDown"></div>
-                    </div>
-                </div>
-                </section>
-            );
-
-            const Philosophy = () => (
-                <section className="py-32 md:py-48 px-6 bg-[#111] text-white relative overflow-hidden">
-                <div className="max-w-6xl mx-auto relative z-10">
-                    <Reveal>
-                    <div className="flex items-center mb-16">
-                        <div className="w-12 h-[1px] bg-white/50 mr-6"></div>
-                        <div className="text-xs tracking-[0.3em] font-medium uppercase text-white/70">Philosophy</div>
-                    </div>
-                    </Reveal>
-                    
-                    <Reveal delay={200}>
-                    <h2 className="text-3xl md:text-6xl font-bold mb-24 leading-tight tracking-tight">
-                        経済は目的ではなく、<br />
-                        <span className="text-gray-400">未来を支えるための手段。</span>
-                    </h2>
-                    </Reveal>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-32 text-lg md:text-xl font-light leading-loose text-gray-300">
-                    <Reveal delay={400}>
-                        <p className="mb-12">
-                        私たちは、自らが学び、成長し続ける存在でありたいと考えています。
-                        そして、人間力と実践力を備えた人財を育み、
-                        健全な経済活動を通して、この地球に貢献することを使命としています。
-                        </p>
-                    </Reveal>
-                    <Reveal delay={600}>
-                        <p className="mb-12">
-                        精神と経済、その両輪が自律してこそ、
-                        個人も企業も、持続的に成長することができます。
-                        Oneは、一人ひとりの「意志ある一歩」から始まる成長を支え、
-                        責任ある経済活動が循環する社会を目指します。
-                        </p>
-                        <div className="pt-8 border-t border-white/10 mt-8 hover:border-white/30 transition-colors duration-500">
-                        <p className="text-sm text-gray-500 leading-relaxed">
-                            <span className="text-white font-medium block mb-2 text-base">Concept: “ココ”</span>
-                            此処・個々・瞬間。<br />
-                            変化は、今ここにいる一人の選択から始まる。
-                        </p>
-                        </div>
-                    </Reveal>
-                    </div>
-                </div>
-                </section>
-            );
-
-            const Services = () => (
-                <section className="bg-[#FAFAFA]" id="services">
-                <div className="px-6 py-24 md:py-32 max-w-[90rem] mx-auto border-b border-[#E5E5E5]">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between">
-                    <Reveal>
-                        <div className="text-xs tracking-[0.3em] font-bold text-[#888] mb-6 uppercase">Our Service</div>
-                        <h2 className="text-4xl md:text-7xl font-bold text-[#111] tracking-tighter">
-                        事業内容
-                        </h2>
-                    </Reveal>
-                    <Reveal delay={200}>
-                        <p className="mt-8 md:mt-0 max-w-xl text-lg font-medium text-[#444] leading-relaxed text-right md:text-left">
-                        商売の本質と金融知識を基盤に、<br />
-                        個人と企業の「自律」と「継続的成長」を支援。
-                        </p>
-                    </Reveal>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                    {[
-                    {
-                        id: "01",
-                        title: "財務会計顧問",
-                        en: "Financial Accounting",
-                        desc: "法律・会計・税務の各分野に精通した専門家が在籍。数字を「管理する」だけでなく「活かす」財務会計を提供。",
-                        icon: BarChart3
-                    },
-                    {
-                        id: "02",
-                        title: "FP業務",
-                        en: "Financial Planning",
-                        desc: "全国各地の企業・団体・自治体からの依頼により、1,500回以上の講演・セミナーを実施。人生と事業に寄り添う資金設計。",
-                        icon: Users
-                    },
-                    {
-                        id: "03",
-                        title: "ビジネススクール",
-                        en: "Business School",
-                        desc: "単なるノウハウではなく、本質を捉え、自ら考え、生き抜く力――「人生力」を身につける実践型ビジネスセミナー。",
-                        icon: GraduationCap,
-                        highlight: true
-                    },
-                    {
-                        id: "04",
-                        title: "教育制度 (OLG)",
-                        en: "One LIFE Group",
-                        desc: "営業スキルと人生力を身につけ、一から学び、実践し、収入を得ていくための中核教育プログラム。",
-                        icon: Briefcase,
-                        highlight: true
-                    },
-                    {
-                        id: "05",
-                        title: "海外進出サポート",
-                        en: "Global Support",
-                        desc: "海外での生活・事業経験を持つメンバーが培った、知識と人脈を活かし、海外展開を視野に入れた事業構築を支援。",
-                        icon: Globe
-                    },
-                    {
-                        id: "06",
-                        title: "企業研修",
-                        en: "Consulting & Training",
-                        desc: "商売の本質と高度な金融知識を融合した、実践型支援。結果にフォーカスし、最後まで伴走します。",
-                        icon: MessageSquare
+                // --- Resize ---
+                const handleResize = () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    // Mobile Adjustment
+                    if (window.innerWidth < 768) {
+                        group.scale.set(0.7, 0.7, 0.7);
+                    } else {
+                        group.scale.set(1, 1, 1);
                     }
-                    ].map((item, i) => (
-                    <Reveal key={i} delay={i * 100} className="h-full">
-                        <div 
-                        className={`
-                            group relative p-12 h-full flex flex-col justify-between border-b border-r border-[#E5E5E5]
-                            ${item.highlight ? 'bg-[#1A1A1A] text-white hover:bg-[#000]' : 'bg-white text-[#111] hover:bg-white hover:shadow-2xl hover:shadow-black/5 hover:z-10'}
-                            transition-all duration-500 ease-out
-                        `}
-                        >
-                        <div className="flex justify-between items-start mb-12">
-                            <span className={`text-xs font-bold tracking-widest ${item.highlight ? 'text-white/30' : 'text-black/20'}`}>
-                            {item.id}
-                            </span>
-                            <item.icon className={`w-6 h-6 ${item.highlight ? 'text-white' : 'text-[#111]'} transition-transform duration-500 group-hover:scale-110`} />
-                        </div>
+                };
+                window.addEventListener('resize', handleResize);
+                handleResize(); // Init
 
-                        <div className="relative z-10 flex-grow">
-                            <h3 className="text-2xl font-bold mb-2 tracking-tight group-hover:translate-x-1 transition-transform duration-300">{item.title}</h3>
-                            <p className={`text-[10px] font-bold tracking-[0.2em] uppercase mb-6 ${item.highlight ? 'text-white/50' : 'text-black/40'}`}>
-                            {item.en}
-                            </p>
-                            <p className={`text-sm leading-[1.8] ${item.highlight ? 'text-gray-300' : 'text-gray-600'}`}>
-                            {item.desc}
-                            </p>
-                        </div>
+                // Show canvas
+                document.getElementById('canvas-container').classList.add('loaded');
 
-                        <div className={`mt-8 pt-6 border-t ${item.highlight ? 'border-white/10' : 'border-black/5'}`}>
-                            <div className="flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
-                            <span className="text-xs font-bold uppercase tracking-widest">View More</span>
-                            <ArrowRight className="w-4 h-4" />
+                return () => {
+                    window.removeEventListener('resize', handleResize);
+                    cancelAnimationFrame(animationId);
+                    if(mountRef.current && renderer.domElement) mountRef.current.removeChild(renderer.domElement);
+                };
+            }, []);
+            return <div id="canvas-container" ref={mountRef} />;
+        };
+
+        // --- Shared Components ---
+        const Navigation = ({ navigate }) => (
+            <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 py-6 transition-all">
+                <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
+                    <button onClick={() => navigate('home')} className="hover:opacity-60 transition-opacity">
+                        <img src="One - 27.png" alt="One." className="h-8 w-auto" />
+                    </button>
+                    <div className="flex space-x-8 md:space-x-12 text-[10px] md:text-xs font-bold tracking-widest uppercase text-[#555]">
+                        <button onClick={() => navigate('services')} className="hover:text-black transition-colors">Services</button>
+                        <a href="#contact" className="hover:text-black transition-colors">Contact</a>
+                    </div>
+                </div>
+            </nav>
+        );
+
+        const Footer = ({ navigate }) => (
+            <footer className="bg-white border-t border-gray-100 pt-24 pb-12 px-6 md:px-12">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex flex-col md:flex-row justify-between items-start mb-20">
+                        <div className="mb-12 md:mb-0">
+                            <button onClick={() => navigate('home')} className="mb-6 block hover:opacity-60 transition-opacity">
+                                <span className="text-3xl font-bold tracking-tighter text-[#111]">株式会社One</span>
+                            </button>
+                            <address className="text-xs text-gray-500 not-italic leading-relaxed">
+                                株式会社One<br/>
+                                〒104-0061 東京都中央区銀座1丁目12番4号 N&E BLD.6F<br/>
+                                03-6820-9801
+                            </address>
+                        </div>
+                        <div className="text-xs text-gray-500 leading-loose">
+                            <ul className="space-y-2">
+                                <li>財務会計顧問サービス</li>
+                                <li>ファイナンシャルプランニング業務</li>
+                                <li>ビジネススクール</li>
+                                <li>教育制度（OLG / One LIFE Group）</li>
+                                <li>コンサルティング・企業研修</li>
+                                <li>海外進出サポート</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="text-[10px] text-gray-400 tracking-widest uppercase text-center md:text-left border-t border-gray-50 pt-8">
+                        © One.Company All Rights Reserved.
+                    </div>
+                </div>
+            </footer>
+        );
+
+        const SectionHeading = ({ en, ja }) => (
+            <div className="mb-16">
+                <span className="block text-xs font-serif-en text-gray-400 tracking-widest mb-2 italic">{en}</span>
+                <h2 className="text-2xl md:text-3xl font-medium tracking-wide text-[#111]">{ja}</h2>
+            </div>
+        );
+
+        // --- Pages ---
+
+        // 1. Home Page
+        const PageHome = ({ navigate }) => {
+            return (
+                <div className="fade-in pt-32 md:pt-48">
+                    {/* Hero */}
+                    <section className="px-6 md:px-12 min-h-[85vh] flex flex-col justify-between max-w-7xl mx-auto relative z-10">
+                        
+                        {/* Symbolic "One" - Structural Rise Animation */}
+                        <div className="absolute top-0 left-0 md:-left-20 w-full h-full flex items-start justify-start pointer-events-none select-none z-0 overflow-visible">
+                            <div className="text-[18rem] md:text-[30rem] lg:text-[40rem] font-serif-en font-bold text-[#000] leading-none one-symbol origin-top-left -mt-32 opacity-0">
+                                One
                             </div>
                         </div>
+
+                        <div className="max-w-6xl slide-up relative z-10">
+                            {/* Philosophy as the main face with weight and rhythm */}
+                            {/* Expanded max-width to allow the long 3rd line to fit in one line on desktops */}
+                            <h1 className="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-serif-jp font-bold leading-[1.5] tracking-wide text-[#111] mb-16 feature-font w-full">
+                                <span className="block animate-text-rise" style={{animationDelay: '0.2s'}}>自らが成長し続け、</span>
+                                <span className="block animate-text-rise" style={{animationDelay: '0.6s'}}>人間力のある人財を育み、</span>
+                                <span className="block animate-text-rise" style={{animationDelay: '1.0s'}}>経済活動を通してこの地球に貢献する。</span>
+                            </h1>
+                            
+                            <div className="pl-6 border-l border-gray-200 animate-text-rise" style={{animationDelay: '1.4s'}}>
+                                <h2 className="text-lg md:text-xl text-gray-600 mb-6 font-normal tracking-wide">
+                                    社会を豊かにする、新たな一歩を“ココ”から。
+                                </h2 >
+                                <p className="text-sm md:text-base text-gray-500 leading-loose max-w-2xl text-justify-inter-character">
+                                    Oneは、情報やノウハウを売る会社ではありません。<br class="hidden md:block"/>
+                                    商売の本質と金融知識を軸に、個人と企業が「自ら考え、決断し、行動できる力」を育てる。<br/>
+                                    私たちは、成果と継続に責任を持つ、伴走型のパートナーです。
+                                </p>
+                            </div>
                         </div>
-                    </Reveal>
-                    ))}
-                </div>
-                </section>
-            );
 
-            const Proof = () => (
-                <section className="py-32 md:py-48 px-6 bg-white border-b border-[#E5E5E5]">
-                <div className="max-w-[90rem] mx-auto">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
-                    <Reveal>
-                        <h2 className="text-5xl md:text-8xl font-bold text-[#111] leading-[0.9] tracking-tighter mb-12">
-                        PROVEN<br />RESULTS.
-                        </h2>
-                        <div className="w-20 h-1 bg-[#111]"></div>
-                    </Reveal>
-                    
-                    <div className="flex flex-col justify-center">
-                        <Reveal delay={200}>
-                        <h3 className="text-xl font-bold mb-12 text-[#111]">信頼の根拠</h3>
-                        </Reveal>
-                        <ul className="space-y-6">
-                        {[
-                            "金融・経済教育における全国規模の講演実績",
-                            "個人・企業・団体を横断した1万人超の相談経験",
-                            "国内外にまたがる10年以上の実務支援",
-                            "成果を出し続ける人材・チームの育成実績"
-                        ].map((proof, i) => (
-                            <Reveal key={i} delay={300 + (i * 100)}>
-                            <li className="flex items-start group cursor-default">
-                                <ArrowUpRight className="w-5 h-5 mr-6 flex-shrink-0 text-[#888] transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-black" />
-                                <span className="text-lg md:text-xl font-medium text-[#333] border-b border-transparent pb-2 group-hover:border-[#111] transition-all duration-300">
-                                {proof}
-                                </span>
-                            </li>
-                            </Reveal>
+                        <div className="py-20 slide-up relative z-10" style={{animationDelay: '1.6s'}}>
+                            <button 
+                                onClick={() => navigate('services')}
+                                className="group relative inline-flex items-center justify-center px-12 py-5 bg-[#111] text-white text-xs font-bold tracking-widest overflow-hidden transition-all hover:bg-[#333]"
+                            >
+                                <span className="relative z-10">事業内容を見る</span>
+                            </button>
+                        </div>
+                    </section>
+
+                    {/* Facts */}
+                    <section className="px-6 md:px-12 py-32 bg-gray-50/50 border-t border-gray-100 relative z-10">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-8">
+                                {[
+                                    { num: "1,500+", label: "講演・セミナー実績" },
+                                    { num: "10,000+", label: "累計相談者数" },
+                                    { num: "10 Years", label: "国内外企業支援" },
+                                    { num: "Many", label: "年商1億円超人材" }
+                                ].map((item, i) => (
+                                    <div key={i} className="flex flex-col">
+                                        <div className="text-4xl md:text-5xl font-serif-en font-light text-[#111] mb-3 whitespace-nowrap">{item.num}</div>
+                                        <div className="text-xs text-gray-500 font-bold tracking-widest">{item.label}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Service Index (Simple List) */}
+                    <section className="px-6 md:px-12 py-32 border-t border-gray-100 relative z-10">
+                        <div className="max-w-7xl mx-auto">
+                            <SectionHeading en="Business Domain" ja="事業内容" />
+                            <div className="grid md:grid-cols-2 gap-12 lg:gap-24">
+                                <div>
+                                    <p className="text-sm leading-loose text-gray-600 mb-12">
+                                        私たちのサービスは、単独で存在するのではなく、<br/>
+                                        企業の成長フェーズに合わせた「階層構造」を持っています。<br/>
+                                        学び、実践し、仕組みを設計し、そして拡張する。<br/>
+                                        一貫した思想のもと、最適なソリューションを提供します。
+                                    </p>
+                                    <button onClick={() => navigate('services')} className="text-xs font-bold border-b border-black pb-1 hover:opacity-60 transition-opacity">
+                                        詳細な構造を見る →
+                                    </button>
+                                </div>
+                                <div className="space-y-4">
+                                    {["ビジネススクール", "教育制度 (OLG)", "財務会計顧問・FP", "海外進出・企業研修"].map((s, i) => (
+                                        <div key={i} className="flex items-center py-4 border-b border-gray-100 text-sm text-gray-800">
+                                            <span className="text-xs text-gray-400 w-12 font-serif-en">0{i+1}</span>
+                                            {s}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Contact (Common CTA) */}
+                    <section id="contact" className="px-6 md:px-12 py-40 bg-[#111] text-white relative z-10">
+                        <div className="max-w-4xl mx-auto text-center">
+                            <h2 className="text-3xl md:text-4xl font-serif-en italic mb-8">Contact</h2>
+                            <p className="text-sm md:text-base text-gray-400 mb-16 leading-loose">
+                                まずは、今抱えている課題や想いをお聞かせください。<br/>
+                                最適な一歩を、共に考えます。
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                                <button className="py-4 px-12 border border-white/20 text-xs tracking-widest hover:bg-white hover:text-black transition-colors">
+                                    無料相談フォーム
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            );
+        };
+
+        // 2. Service List Page (Hierarchical)
+        const PageServiceList = ({ navigate }) => {
+            return (
+                <div className="fade-in pt-32 md:pt-40">
+                    <header className="px-6 md:px-12 mb-24 max-w-7xl mx-auto">
+                        <span className="text-xs font-serif-en text-gray-400 tracking-widest mb-4 block italic">Structure of Growth</span>
+                        <h1 className="text-3xl md:text-4xl font-medium mb-8 text-[#111]">成長の階層構造</h1>
+                        <p className="text-sm text-gray-600 max-w-2xl leading-loose">
+                            Oneの事業は、単なるサービスの羅列ではありません。<br/>
+                            「学び」から始まり、「実践」を経て、「設計」し、「拡張」する。<br/>
+                            人が自立し、経済活動を行うためのプロセスそのものです。
+                        </p>
+                    </header>
+
+                    <div className="max-w-7xl mx-auto px-6 md:px-12 pb-32">
+                        {SERVICES_HIERARCHY.map((group, i) => (
+                            <section key={i} className="mb-24 last:mb-0 relative pl-8 md:pl-0 border-l border-gray-100 md:border-l-0">
+                                {/* Hierarchy Line for Mobile */}
+                                <div className="md:hidden absolute top-0 left-0 w-[1px] h-full bg-gray-100"></div>
+                                
+                                <div className="grid md:grid-cols-12 gap-8 md:gap-16">
+                                    <div className="md:col-span-3">
+                                        <div className="sticky top-32">
+                                            <div className="text-xs font-serif-en text-gray-400 mb-2 italic">{group.sub}</div>
+                                            <h2 className="text-xl font-bold text-[#111]">{group.category}</h2>
+                                        </div>
+                                    </div>
+                                    <div className="md:col-span-9 space-y-12">
+                                        {group.items.map((service, j) => (
+                                            <div key={j} onClick={() => navigate('detail', service.id)} className="group cursor-pointer bg-white border border-transparent hover:border-gray-200 p-8 transition-all duration-500">
+                                                <div className="flex justify-between items-start mb-6">
+                                                    <h3 className="text-lg font-bold text-[#111]">{service.title}</h3>
+                                                    <span className="text-[10px] text-gray-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">View Details →</span>
+                                                </div>
+                                                <p className="text-sm text-gray-600 leading-loose mb-6" dangerouslySetInnerHTML={{ __html: service.lead }} />
+                                                <div className="w-8 h-[1px] bg-gray-200 group-hover:w-full group-hover:bg-black transition-all duration-700"></div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </section>
                         ))}
-                        </ul>
-                    </div>
-                    </div>
-                </div>
-                </section>
-            );
-
-            const Company = () => (
-                <section className="py-32 px-6 bg-[#FAFAFA] border-b border-[#E5E5E5]">
-                <div className="max-w-4xl mx-auto text-center">
-                    <Reveal>
-                    <h2 className="text-xs font-bold tracking-[0.5em] uppercase mb-16 text-[#888]">Company Profile</h2>
-                    
-                    <div className="text-4xl md:text-5xl font-bold text-[#111] mb-10 tracking-tight">
-                        One.Company
                     </div>
                     
-                    <div className="space-y-3 text-base font-medium text-[#444]">
-                        <p>株式会社One</p>
-                        <p>金融・教育・コンサルティング事業</p>
-                    </div>
-
-                    <div className="w-px h-16 bg-[#DDD] mx-auto my-12"></div>
-
-                    <p className="text-xl md:text-2xl font-normal leading-relaxed text-[#111] max-w-2xl mx-auto">
-                        自らが成長し続け、人間力ある人財を育み、<br />
-                        経済活動を通して地球に貢献する
-                    </p>
-                    </Reveal>
+                    {/* Common CTA */}
+                    <section id="contact" className="px-6 md:px-12 py-40 bg-[#111] text-white">
+                        <div className="max-w-4xl mx-auto text-center">
+                            <h2 className="text-3xl md:text-4xl font-serif-en italic mb-8">Contact</h2>
+                            <p className="text-sm md:text-base text-gray-400 mb-16 leading-loose">
+                                どのフェーズからでも、ご相談いただけます。<br/>
+                                あなたの現状に合わせた最適なプランを提案します。
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                                <button className="py-4 px-12 bg-white text-black text-xs font-bold tracking-widest hover:bg-gray-200 transition-colors">
+                                    無料相談フォーム
+                                </button>
+                            </div>
+                        </div>
+                    </section>
                 </div>
-                </section>
             );
+        };
 
-            const Contact = () => (
-                <section className="py-32 md:py-48 px-6 bg-[#111] text-white text-center relative overflow-hidden" id="contact">
-                <div className="max-w-5xl mx-auto relative z-10">
-                    <Reveal>
-                    <h2 className="text-5xl md:text-8xl font-bold mb-12 tracking-tighter leading-none">
-                        CONTACT
-                    </h2>
-                    </Reveal>
-                    <Reveal delay={200}>
-                    <p className="text-lg md:text-xl font-normal text-gray-400 mb-20 max-w-2xl mx-auto leading-relaxed">
-                        まずは、今抱えている課題や想いをお聞かせください。<br />
-                        最適な一歩を、共に考えます。
-                    </p>
-                    </Reveal>
-                    
-                    <Reveal delay={400}>
-                    <div className="flex flex-col md:flex-row gap-6 justify-center">
-                        {["無料相談フォーム", "法人向け研修・相談", "講演・セミナー依頼"].map((btn, i) => (
-                        <button 
-                            key={i} 
-                            className="group relative py-6 px-10 border border-white/20 text-white text-sm font-bold tracking-widest overflow-hidden hover:bg-white hover:text-black transition-all duration-500"
-                        >
-                            <span className="relative z-10">{btn}</span>
-                        </button>
-                        ))}
-                    </div>
-                    </Reveal>
-                </div>
-                </section>
-            );
+        // 3. Service Detail Page
+        const PageServiceDetail = ({ id, navigate }) => {
+            // Find service data from hierarchy
+            let data = null;
+            SERVICES_HIERARCHY.forEach(group => {
+                const found = group.items.find(item => item.id === id);
+                if (found) data = found;
+            });
+
+            if (!data) return <div className="pt-40 text-center">Not Found</div>;
 
             return (
-                <div className="font-sans antialiased text-[#111] bg-white selection:bg-[#111] selection:text-white overflow-x-hidden">
-                <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ease-in-out ${scrolled ? 'bg-white/90 backdrop-blur-md border-b border-[#E5E5E5] py-4 shadow-sm' : 'bg-transparent py-8'}`}>
-                    <div className="max-w-[95%] mx-auto px-6 flex justify-between items-center">
-                    <div className="text-2xl font-bold tracking-tighter">One.</div>
-                    <div className="hidden md:flex space-x-12 text-xs font-bold tracking-widest uppercase">
-                        <a href="#services" className="hover:text-gray-500 transition-colors">Service</a>
-                        <a href="#contact" className="hover:text-gray-500 transition-colors">Contact</a>
-                    </div>
-                    </div>
-                </nav>
+                <div className="fade-in pt-32 md:pt-40 bg-white min-h-screen">
+                    <article className="max-w-4xl mx-auto px-6 md:px-12 pb-32">
+                        <div className="mb-16">
+                            <button onClick={() => navigate('services')} className="text-[10px] text-gray-400 tracking-widest hover:text-black transition-colors mb-8">← BACK TO LIST</button>
+                            <div className="text-xs font-serif-en text-gray-400 italic mb-4">{data.enTitle}</div>
+                            <h1 className="text-3xl md:text-5xl font-medium text-[#111] mb-12">{data.title}</h1>
+                            <div className="text-lg md:text-xl font-normal leading-relaxed text-gray-800 p-8 border-l-2 border-gray-100 bg-gray-50">
+                                <div dangerouslySetInnerHTML={{ __html: data.lead }} />
+                            </div>
+                        </div>
 
-                <main>
-                    <Hero />
-                    <Philosophy />
-                    <Services />
-                    <Proof />
-                    <Company />
-                    <Contact />
-                </main>
+                        <div className="space-y-8 text-sm md:text-base leading-[2.2] text-gray-600 mb-20">
+                            {data.desc.map((p, i) => <p key={i}>{p}</p>)}
+                        </div>
 
-                <footer className="py-12 px-6 bg-[#111] text-white border-t border-white/10">
-                    <div className="max-w-[90rem] mx-auto flex flex-col md:flex-row justify-between items-end">
-                    <div className="text-4xl font-bold tracking-tighter mb-8 md:mb-0 opacity-20">One.</div>
-                    <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500">
-                        © {new Date().getFullYear()} One. All Rights Reserved.
-                    </div>
-                    </div>
-                </footer>
+                        <div className="border-t border-gray-100 pt-16 flex justify-center">
+                            <a href="#contact" className="py-4 px-16 bg-[#111] text-white text-xs font-bold tracking-widest hover:bg-gray-800 transition-colors">
+                                この事業について相談する
+                            </a>
+                        </div>
+                    </article>
+                </div>
+            );
+        };
+
+        // --- Router ---
+        const App = () => {
+            const [page, setPage] = useState('home');
+            const [detailId, setDetailId] = useState(null);
+
+            const navigate = (target, id = null) => {
+                setPage(target);
+                if (id) setDetailId(id);
+                window.scrollTo(0, 0);
+            };
+
+            return (
+                <div>
+                    <ThreeBackground />
+                    <Navigation navigate={navigate} />
+                    
+                    <main>
+                        {page === 'home' && <PageHome navigate={navigate} />}
+                        {page === 'services' && <PageServiceList navigate={navigate} />}
+                        {page === 'detail' && <PageServiceDetail id={detailId} navigate={navigate} />}
+                    </main>
+                    
+                    {page === 'home' && <Footer navigate={navigate} />}
                 </div>
             );
         };
