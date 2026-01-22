@@ -24,6 +24,7 @@
             --color-text-main: #111111;
             --color-text-sub: #4a4a4a;
             --color-bg: #FFFFFF;
+            --color-bg-alt: #F2F2F2; /* Added slightly darker bg */
             --color-line: #E5E5E5;
         }
         
@@ -41,9 +42,8 @@
         
         /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f5f5f5; }
-        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #999; }
+        ::-webkit-scrollbar-track { background: #fff; }
+        ::-webkit-scrollbar-thumb { background: #ddd; }
         
         /* Three.js Layer */
         #canvas-container { 
@@ -52,16 +52,6 @@
             transition: opacity 2s ease-out;
         }
         #canvas-container.loaded { opacity: 1; }
-
-        /* Grain Texture (Adds luxury matte finish) */
-        .grain-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
         
         /* H1 Typography Control */
         .h1-responsive {
@@ -71,17 +61,17 @@
         
         /* Animations */
         @keyframes structuralRise {
-            0% { opacity: 0; transform: translateY(60px) scale(0.95); filter: blur(15px); }
-            100% { opacity: 0.08; transform: translateY(0) scale(1); filter: blur(0); }
+            0% { opacity: 0; transform: translateY(40px) scale(0.98); filter: blur(10px); }
+            100% { opacity: 0.10; transform: translateY(0) scale(1); filter: blur(0); }
         }
         .one-symbol {
-            animation: structuralRise 3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: structuralRise 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
             will-change: transform, opacity, filter;
         }
 
         @keyframes textRise {
-            0% { opacity: 0; transform: translateY(30px); filter: blur(4px); }
+            0% { opacity: 0; transform: translateY(20px); filter: blur(4px); }
             100% { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
         .animate-rise {
@@ -99,18 +89,16 @@
         
         /* Utility */
         .text-balance { text-wrap: balance; }
+        .border-theme { border-color: #E5E5E5; }
+        .inline-block-text { display: inline-block; }
         .ib { display: inline-block; }
-        .bg-subtle-gray { background-color: #FAFAFA; }
-        
-        /* Image Reveal Effect */
-        .img-reveal-container { overflow: hidden; position: relative; }
-        .img-reveal-img { transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        .img-reveal-container:hover .img-reveal-img { transform: scale(1.05); }
+
+        /* Custom Utilities for Layout */
+        .sticky-col { position: sticky; top: 8rem; }
     </style>
 </head>
 <body>
     <div id="root"></div>
-    <div class="grain-overlay"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
@@ -119,11 +107,7 @@
         const Logo = ({ navigate }) => {
             return (
                 <button onClick={() => navigate('home')} className="hover:opacity-60 transition-opacity flex items-center">
-                    <img 
-                        src="https://raw.githubusercontent.com/One-01company/corporatesite/main/2.png" 
-                        alt="One Logo" 
-                        className="h-16 w-auto" 
-                    />
+                    <img src="1.png" alt="One Logo" className="h-8 w-auto" />
                 </button>
             );
         };
@@ -133,6 +117,7 @@
             {
                 category: "01 学び",
                 sub: "Foundation",
+                desc: "ビジネスの基礎体力と、本質的な思考力を養う。",
                 items: [
                     {
                         id: "school",
@@ -152,6 +137,7 @@
             {
                 category: "02 実践",
                 sub: "Practice",
+                desc: "学んだ知識を、市場で価値に変える経験を積む。",
                 items: [
                     {
                         id: "olg",
@@ -160,10 +146,10 @@
                         summary: "<span class='ib'>ゼロから学び、実践し、</span><br><span class='ib'>収入を得ていく</span><span class='ib'>独自のエコシステム。</span>",
                         proof: "成果創出までの期間：平均3〜6ヶ月",
                         details: {
-                            why: "<span class='ib'>座学で得た知識は、</span><span class='ib'>実践で使って初めて</span><span class='ib'>「知恵」になります。</span><span class='ib'>しかし、失敗が許されない環境では</span><span class='ib'>大胆な挑戦はできません。</span><span class='ib'>OLGは、</span><span class='ib'>安全に、かつ真剣に</span><span class='ib'>ビジネスに挑戦できる</span><span class='ib'>「実践の場」を提供することで、</span><span class='ib'>成長速度を最大化します。</span>",
-                            what: "<span class='ib'>OLG（One LIFE Group）は、</span><span class='ib'>営業スキルと人生力を</span><span class='ib'>ゼロから学び、</span><span class='ib'>実際に収益を上げながら成長できる</span><span class='ib'>独自の教育プログラムおよび</span><span class='ib'>コミュニティです。</span><span class='ib'>商売の基本である</span><span class='ib'>「集客・販売・顧客対応」を、</span><span class='ib'>リアルの現場で体得します。</span>",
-                            how: "<span class='ib'>段階別に設計されたカリキュラムと、</span><span class='ib'>専属メンターによる</span><span class='ib'>伴走支援を用意しています。</span><span class='ib'>まずは小さな成功体験を積み重ね、</span><span class='ib'>徐々に難易度の高い課題に</span><span class='ib'>挑むことで、</span><span class='ib'>確実に実力を養い、</span><span class='ib'>経済的自立へと導きます。</span>",
-                            who: "【向いている人】<br><span class='ib'>現状を変えたいという</span><span class='ib'>強い意志がある方、</span><span class='ib'>泥臭い努力を厭わない方、</span><span class='ib'>仲間と共に成長したい方。</span><br><br>【向いていない人】<br><span class='ib'>他責思考の方、</span><span class='ib'>約束を守れない方、</span><span class='ib'>即金性のみを求める方。</span>"
+                            why: "<span class='ib'>座学で得た知識は、</span><span class='ib'>実践で使って初めて</span><span class='ib'>「知恵」になります。</span><span class='ib'>しかし、</span><span class='ib'>失敗が許されない環境では</span><span class='ib'>大胆な挑戦はできません。</span><span class='ib'>OLGは、</span><span class='ib'>安全に、</span><span class='ib'>かつ真剣に</span><span class='ib'>ビジネスに挑戦できる</span><span class='ib'>「実践の場」を</span><span class='ib'>提供することで、</span><span class='ib'>成長速度を</span><span class='ib'>最大化します。</span>",
+                            what: "<span class='ib'>OLG（One LIFE Group）は、</span><span class='ib'>営業スキルと</span><span class='ib'>人生力を</span><span class='ib'>ゼロから学び、</span><span class='ib'>実際に収益を</span><span class='ib'>上げながら成長できる</span><span class='ib'>独自の</span><span class='ib'>教育プログラムおよび</span><span class='ib'>コミュニティです。</span><span class='ib'>商売の基本である</span><span class='ib'>「集客・販売・顧客対応」を、</span><span class='ib'>リアルの現場で</span><span class='ib'>体得します。</span>",
+                            how: "<span class='ib'>段階別に設計された</span><span class='ib'>カリキュラムと、</span><span class='ib'>専属メンターによる</span><span class='ib'>伴走支援を</span><span class='ib'>用意しています。</span><span class='ib'>まずは小さな</span><span class='ib'>成功体験を積み重ね、</span><span class='ib'>徐々に難易度の</span><span class='ib'>高い課題に</span><span class='ib'>挑むことで、</span><span class='ib'>確実に実力を養い、</span><span class='ib'>経済的自立へと</span><span class='ib'>導きます。</span>",
+                            who: "【向いている人】<br><span class='ib'>現状を変えたいという</span><span class='ib'>強い意志がある方、</span><span class='ib'>泥臭い努力を</span><span class='ib'>厭わない方、</span><span class='ib'>仲間と共に</span><span class='ib'>成長したい方。</span><br><br>【向いていない人】<br><span class='ib'>他責思考の方、</span><span class='ib'>約束を守れない方、</span><span class='ib'>即金性のみを</span><span class='ib'>求める方。</span>"
                         }
                     }
                 ]
@@ -171,6 +157,7 @@
             {
                 category: "03 設計",
                 sub: "Architecture",
+                desc: "事業と人生の基盤を、数字と論理で強固にする。",
                 items: [
                     {
                         id: "finance-advisory",
@@ -203,6 +190,7 @@
             {
                 category: "04 拡張",
                 sub: "Expansion",
+                desc: "物理的・精神的な境界を越え、可能性を広げる。",
                 items: [
                     {
                         id: "overseas",
@@ -243,6 +231,7 @@
                 const w = window.innerWidth;
                 const h = window.innerHeight;
                 const scene = new THREE.Scene();
+                // Fog setting
                 scene.fog = new THREE.FogExp2(0xffffff, 0.0015);
                 
                 const camera = new THREE.PerspectiveCamera(75, w/h, 1, 1000);
@@ -256,7 +245,6 @@
                 const group = new THREE.Group();
                 scene.add(group);
 
-                // --- Dots & Lines ---
                 const particleCount = 100;
                 const r = 120;
                 const rHalf = r / 2;
@@ -294,7 +282,6 @@
                 let animationId;
                 const animate = () => {
                     let vertexpos = 0;
-                    let numConnected = 0;
                     for (let i = 0; i < particleCount; i++) {
                         const p = particlesData[i];
                         positions[i * 3] += p.velocity.x;
@@ -317,11 +304,10 @@
                                 linePositions[vertexpos++] = positions[j * 3];
                                 linePositions[vertexpos++] = positions[j * 3 + 1];
                                 linePositions[vertexpos++] = positions[j * 3 + 2];
-                                numConnected++;
                             }
                         }
                     }
-                    linesMesh.geometry.setDrawRange(0, numConnected * 2);
+                    linesMesh.geometry.setDrawRange(0, vertexpos / 3 * 2); // Correct drawing range
                     linesMesh.geometry.attributes.position.needsUpdate = true;
                     particleSystem.geometry.attributes.position.needsUpdate = true;
                     group.rotation.y += 0.0003;
@@ -335,6 +321,7 @@
                     camera.aspect = window.innerWidth / window.innerHeight;
                     camera.updateProjectionMatrix();
                     renderer.setSize(window.innerWidth, window.innerHeight);
+                    if (window.innerWidth < 768) { group.scale.set(0.7, 0.7, 0.7); } else { group.scale.set(1, 1, 1); }
                 };
                 window.addEventListener('resize', handleResize);
                 handleResize();
@@ -344,7 +331,7 @@
             return <div id="canvas-container" ref={mountRef} />;
         };
 
-        // --- Components ---
+        // --- Shared Components ---
         const Navigation = ({ navigate }) => (
             <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 py-6 transition-all">
                 <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
@@ -425,7 +412,7 @@
                                 <span className="block animate-rise" style={{animationDelay: '1.5s'}}>自らが成長し続け、</span>
                                 <span className="block animate-rise" style={{animationDelay: '1.9s'}}>人間力のある人財を育み、</span>
                                 <span className="block animate-rise" style={{animationDelay: '2.3s'}}>
-                                    <span className="inline-block whitespace-nowrap">経済活動を通してこの地球に貢献する。</span>
+                                    <span className="ib">経済活動を通してこの地球に貢献する。</span>
                                 </span>
                             </h1>
                             <div className="pl-6 border-l border-gray-200 animate-rise" style={{animationDelay: '2.7s'}}>
@@ -445,7 +432,7 @@
                     </section>
 
                     {/* Message */}
-                    <section className="px-6 md:px-12 py-32 border-t border-gray-100 relative z-10 bg-subtle-gray">
+                    <section className="px-6 md:px-12 py-32 border-t border-gray-100 relative z-10 bg-white">
                         <div className="max-w-4xl mx-auto">
                             <SectionHeading en="Message" ja="Oneの想い" />
                             <div className="space-y-12">
@@ -478,7 +465,7 @@
                                         <div className="bg-white p-10 border border-gray-100 h-full">
                                             <h3 className="text-lg font-bold mb-4 font-serif-jp">{item.t}</h3>
                                             <p className="text-sm leading-loose text-gray-600 text-balance">
-                                                <span className="ib">{item.d}</span>
+                                                {item.d}
                                             </p>
                                         </div>
                                     </Reveal>
@@ -504,7 +491,7 @@
                     </section>
 
                     {/* Service Index */}
-                    <section className="px-6 md:px-12 py-32 border-t border-gray-100 relative z-10 bg-subtle-gray">
+                    <section className="px-6 md:px-12 py-32 border-t border-gray-100 relative z-10 bg-[#FAFAFA]">
                         <div className="max-w-7xl mx-auto">
                             <SectionHeading en="Business Domain" ja="事業内容" />
                             <div className="grid md:grid-cols-2 gap-12 lg:gap-24">
@@ -553,10 +540,10 @@
             );
         };
 
-        // 2. Service List Page
+        // 2. Service List Page (Refined with subtle gray background)
         const PageServiceList = ({ navigate }) => {
             return (
-                <div className="page-transition pt-32 md:pt-40">
+                <div className="page-transition pt-32 md:pt-40 bg-[#FAFAFA] min-h-screen">
                     <header className="px-6 md:px-12 mb-24 max-w-7xl mx-auto">
                         <span className="text-xs font-serif-en text-gray-400 tracking-widest mb-4 block italic">Structure of Growth</span>
                         <h1 className="text-3xl md:text-4xl font-serif-jp font-bold mb-8 text-[#111]">成長の階層構造</h1>
@@ -569,19 +556,17 @@
 
                     <div className="max-w-7xl mx-auto px-6 md:px-12 pb-32">
                         {SERVICES_HIERARCHY.map((group, i) => (
-                            <section key={i} className="mb-24 last:mb-0 relative pl-8 md:pl-0 border-l border-gray-100 md:border-l-0">
-                                <div className="md:hidden absolute top-0 left-0 w-[1px] h-full bg-gray-100"></div>
+                            <section key={i} className="mb-24 last:mb-0 relative pl-8 md:pl-0 border-l border-gray-200 md:border-l-0">
+                                <div className="md:hidden absolute top-0 left-0 w-[1px] h-full bg-gray-200"></div>
                                 <div className="grid md:grid-cols-12 gap-8 md:gap-16">
-                                    <div className="md:col-span-3">
-                                        <div className="sticky top-32">
-                                            <div className="text-xs font-serif-en text-gray-400 mb-2 italic">{group.sub}</div>
-                                            <h2 className="text-2xl font-bold text-[#111] font-serif-jp mb-2">{group.category}</h2>
-                                            <p className="text-sm text-gray-500 mt-2 leading-relaxed text-balance">{group.desc}</p>
-                                        </div>
+                                    <div className="md:col-span-3 sticky-col h-fit">
+                                        <div className="text-xs font-serif-en text-gray-400 mb-2 italic">{group.sub}</div>
+                                        <h2 className="text-2xl font-bold text-[#111] font-serif-jp mb-2">{group.category}</h2>
+                                        <p className="text-sm text-gray-500 mt-2 leading-relaxed text-balance">{group.desc}</p>
                                     </div>
                                     <div className="md:col-span-9 space-y-8">
                                         {group.items.map((service, j) => (
-                                            <div key={j} onClick={() => navigate('detail', service.id)} className="group cursor-pointer bg-white border border-gray-100 hover:border-gray-400 p-10 transition-all duration-500">
+                                            <div key={j} onClick={() => navigate('detail', service.id)} className="group cursor-pointer bg-white border border-gray-200 hover:border-gray-400 p-10 transition-all duration-500 shadow-sm hover:shadow-md">
                                                 <div className="flex justify-between items-start mb-6">
                                                     <h3 className="text-xl font-bold text-[#111] font-serif-jp">{service.title}</h3>
                                                     <span className="text-xs text-gray-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">View Details →</span>
@@ -599,7 +584,7 @@
                         ))}
                     </div>
                     
-                    <section id="contact" className="px-6 md:px-12 py-24 bg-gray-50 border-t border-gray-100">
+                    <section id="contact" className="px-6 md:px-12 py-24 bg-white border-t border-gray-200">
                         <div className="max-w-4xl mx-auto text-center">
                             <h2 className="text-2xl md:text-3xl font-serif-en italic mb-6 text-[#111]">Contact</h2>
                             <p className="text-sm md:text-base text-gray-600 mb-10 leading-loose text-balance">
@@ -617,7 +602,7 @@
             );
         };
 
-        // 3. Service Detail Page
+        // 3. Service Detail Page (Refined Layout)
         const PageServiceDetail = ({ id, navigate }) => {
             let data = null;
             SERVICES_HIERARCHY.forEach(group => {
@@ -629,16 +614,16 @@
 
             return (
                 <div className="page-transition pt-32 md:pt-40 bg-white min-h-screen">
-                    <article className="max-w-5xl mx-auto px-6 md:px-12 pb-32">
-                        <div className="mb-20 border-b border-gray-200 pb-12">
+                    <article className="max-w-6xl mx-auto px-6 md:px-12 pb-32">
+                        <div className="mb-20 pb-12 border-b border-gray-200">
                             <button onClick={() => navigate('services')} className="text-[10px] text-gray-400 tracking-widest hover:text-black transition-colors mb-8">← BACK TO LIST</button>
                             <div className="text-xs font-serif-en text-gray-400 italic mb-4">{data.enTitle}</div>
-                            <h1 className="text-3xl md:text-5xl font-serif-jp font-bold text-[#111] mb-8">{data.title}</h1>
-                            <p className="text-lg text-gray-700 leading-relaxed font-medium text-balance" dangerouslySetInnerHTML={{ __html: data.summary }} />
+                            <h1 className="text-4xl md:text-6xl font-serif-jp font-bold text-[#111] mb-8 leading-tight">{data.title}</h1>
+                            <p className="text-xl text-gray-700 leading-relaxed font-medium text-balance pl-6 border-l-4 border-[#111] py-2" dangerouslySetInnerHTML={{ __html: data.summary }} />
                         </div>
 
-                        <div className="grid md:grid-cols-2 gap-12 lg:gap-20">
-                            <div className="space-y-16">
+                        <div className="grid md:grid-cols-2 gap-16 lg:gap-24">
+                            <div className="space-y-20">
                                 <div>
                                     <h3 className="text-xl font-bold tracking-widest text-[#111] mb-6 uppercase border-b border-black pb-2 inline-block">01 Why - なぜやるのか</h3>
                                     <p className="text-base leading-loose text-gray-600 text-balance" dangerouslySetInnerHTML={{ __html: data.details.why }} />
@@ -648,7 +633,7 @@
                                     <p className="text-base leading-loose text-gray-600 text-balance" dangerouslySetInnerHTML={{ __html: data.details.what }} />
                                 </div>
                             </div>
-                            <div className="space-y-16">
+                            <div className="space-y-20">
                                 <div>
                                     <h3 className="text-xl font-bold tracking-widest text-[#111] mb-6 uppercase border-b border-black pb-2 inline-block">03 How - 進め方</h3>
                                     <p className="text-base leading-loose text-gray-600 text-balance" dangerouslySetInnerHTML={{ __html: data.details.how }} />
@@ -661,7 +646,7 @@
                         </div>
 
                         <div className="border-t border-gray-100 pt-20 mt-20 flex justify-center">
-                            <a href="#contact" className="py-5 px-20 bg-[#111] text-white text-xs font-bold tracking-widest hover:bg-gray-800 transition-colors">
+                            <a href="#contact" className="py-5 px-20 bg-[#111] text-white text-xs font-bold tracking-widest hover:bg-gray-800 transition-colors shadow-lg">
                                 この事業について相談する
                             </a>
                         </div>
@@ -670,6 +655,7 @@
             );
         };
 
+        // --- Router ---
         const App = () => {
             const [page, setPage] = useState('home');
             const [detailId, setDetailId] = useState(null);
