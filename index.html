@@ -499,7 +499,7 @@
 
             useEffect(() => {
 
-                if (!mountRef.current) return;
+                if (!mountRef.current || typeof THREE === 'undefined') return;
 
                 
 
@@ -521,7 +521,13 @@
 
                 
 
-                const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                let renderer;
+                try {
+                    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                } catch (error) {
+                    console.warn('WebGL background disabled:', error);
+                    return;
+                }
 
                 renderer.setSize(w, h);
 
